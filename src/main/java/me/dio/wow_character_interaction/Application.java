@@ -2,12 +2,14 @@ package me.dio.wow_character_interaction;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
+@EnableFeignClients
 @SpringBootApplication
-public class WowCharacterInteractionApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WowCharacterInteractionApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
