@@ -1,11 +1,8 @@
 package me.dio.wow_character_interaction.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-@Entity(name = "tb_wow_character")
+@Entity(name = "wow_characters")
 public class WowCharacter {
 
     @Id
@@ -22,6 +19,7 @@ public class WowCharacter {
 
     private String occupation;
 
+    @Column(columnDefinition = "TEXT")
     private String lore;
 
     public Long getId() {
@@ -78,5 +76,17 @@ public class WowCharacter {
 
     public void setLore(String lore) {
         this.lore = lore;
+    }
+
+    public String generateContextByQuestion(String question) {
+        return """
+                Question: %s
+                Character Name: %s
+                Gender: %s
+                Race: %s
+                Class: %s
+                Occupation: %s
+                Lore: %s
+                """.formatted(question, this.name, this.gender, this.race, this.characterClass, this.occupation, this.lore);
     }
 }

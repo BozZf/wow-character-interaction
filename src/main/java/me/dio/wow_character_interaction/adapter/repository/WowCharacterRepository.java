@@ -1,4 +1,4 @@
-package me.dio.wow_character_interaction.domain.repository;
+package me.dio.wow_character_interaction.adapter.repository;
 
 import me.dio.wow_character_interaction.domain.model.WowCharacter;
 import org.springframework.data.jpa.repository.JpaRepository;

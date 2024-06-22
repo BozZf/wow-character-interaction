@@ -1,7 +1,7 @@
 package me.dio.wow_character_interaction.service.impl;
 
 import me.dio.wow_character_interaction.domain.model.WowCharacter;
-import me.dio.wow_character_interaction.domain.repository.WowCharacterRepository;
+import me.dio.wow_character_interaction.adapter.repository.WowCharacterRepository;
 import me.dio.wow_character_interaction.service.WowCharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,6 @@ import java.util.NoSuchElementException;
 @Service
 public class WowCharacterServiceImpl implements WowCharacterService {
 
-    @Autowired
     private final WowCharacterRepository wowCharacterRepository;
 
     public WowCharacterServiceImpl(WowCharacterRepository wowCharacterRepository) {
@@ -44,14 +43,5 @@ public class WowCharacterServiceImpl implements WowCharacterService {
             throw new NoSuchElementException();
         }
         return wowCharacterRepository.save(wowCharacterToUpdate);
-    }
-
-    @Override
-    public void deleteWowCharacter(Long id) {
-        if (id != null && !wowCharacterRepository.existsById(id)) {
-            throw new NoSuchElementException();
-        }
-        assert id != null;
-        wowCharacterRepository.deleteById(id);
     }
 }

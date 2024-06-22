@@ -1,4 +1,4 @@
-package me.dio.wow_character_interaction.controller;
+package me.dio.wow_character_interaction.adapter.controller;
 
 import me.dio.wow_character_interaction.domain.model.WowCharacter;
 import me.dio.wow_character_interaction.service.WowCharacterService;
@@ -12,7 +12,6 @@ import java.util.List;
 @RequestMapping("/character")
 public class WowCharacterController {
 
-    @Autowired
     private final WowCharacterService wowCharacterService;
 
     public WowCharacterController(WowCharacterService wowCharacterService) {
@@ -38,10 +37,5 @@ public class WowCharacterController {
     public ResponseEntity<WowCharacter> putCharacter(@PathVariable Long id,
                                                      @RequestBody WowCharacter wowCharacterToPut) {
         return ResponseEntity.ok(wowCharacterService.updateWowCharacter(id, wowCharacterToPut));
-    }
-
-    @DeleteMapping("/{id}")
-    private void deleteCharacter(@PathVariable Long id) {
-        wowCharacterService.deleteWowCharacter(id);
     }
 }

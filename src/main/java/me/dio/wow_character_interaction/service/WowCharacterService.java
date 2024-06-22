@@ -13,6 +13,4 @@ public interface WowCharacterService {
     WowCharacter createWowCharacter(WowCharacter wowCharacterToCreate);
 
     WowCharacter updateWowCharacter(Long id, WowCharacter wowCharacterToUpdate);
-
-    void deleteWowCharacter(Long id);
 }
