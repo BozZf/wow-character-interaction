@@ -3,7 +3,6 @@ package me.dio.wow_character_interaction.service.impl;
 import me.dio.wow_character_interaction.domain.model.WowCharacter;
 import me.dio.wow_character_interaction.adapter.repository.WowCharacterRepository;
 import me.dio.wow_character_interaction.service.WowCharacterService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public class WowCharacterServiceImpl implements WowCharacterService {
     public WowCharacter createWowCharacter(WowCharacter wowCharacterToCreate) {
         if (wowCharacterToCreate.getName() != null &&
                 wowCharacterRepository.existsByName(wowCharacterToCreate.getName())) {
-            throw new IllegalArgumentException("This character already exist.");
+            throw new IllegalArgumentException();
         }
         return wowCharacterRepository.save(wowCharacterToCreate);
     }
@@ -43,5 +42,14 @@ public class WowCharacterServiceImpl implements WowCharacterService {
             throw new NoSuchElementException();
         }
         return wowCharacterRepository.save(wowCharacterToUpdate);
+    }
+
+    @Override
+    public void deleteWowCharacter(Long id) {
+        assert id != null;
+        if (!wowCharacterRepository.existsById(id)) {
+            throw new NoSuchElementException();
+        }
+        wowCharacterRepository.deleteById(id);
     }
 }

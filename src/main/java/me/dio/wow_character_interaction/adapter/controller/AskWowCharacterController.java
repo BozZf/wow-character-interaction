@@ -1,7 +1,6 @@
 package me.dio.wow_character_interaction.adapter.controller;
 
 import me.dio.wow_character_interaction.application.AskCharacterUseCase;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

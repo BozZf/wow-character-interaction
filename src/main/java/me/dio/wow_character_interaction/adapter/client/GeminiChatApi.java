@@ -1,6 +1,5 @@
 package me.dio.wow_character_interaction.adapter.client;
 
-import feign.FeignException;
 import me.dio.wow_character_interaction.service.GeminiService;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,14 +22,9 @@ public interface GeminiChatApi extends GeminiService {
         GeminiApiRequest request = new GeminiApiRequest(
                 List.of(new GeminiApiContent(
                         List.of(new GeminiApiPart(prompt)))));
-        try {
-            GeminiApiResponse response = chatResponse(request);
-            return response.candidates().get(0).content().parts().get(0).text();
-        } catch (FeignException.FeignClientException httpErrors) {
-            return "Gemini API comunication error.";
-        } catch (Exception unespectedError) {
-            return "Gemini API return does not contain the expected data.";
-        }
+
+        GeminiApiResponse response = chatResponse(request);
+        return response.candidates().get(0).content().parts().get(0).text();
     }
 
     record GeminiApiRequest(List<GeminiApiContent> contents) { }
