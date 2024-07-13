@@ -1,7 +1,9 @@
 package me.dio.wow_character_interaction.service.impl;
 
-import me.dio.wow_character_interaction.domain.model.WowCharacter;
+import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
 import me.dio.wow_character_interaction.adapter.repository.WowCharacterRepository;
+import me.dio.wow_character_interaction.domain.model.WowCharacter;
+import me.dio.wow_character_interaction.mapper.DTOMapper;
 import me.dio.wow_character_interaction.service.WowCharacterService;
 import org.springframework.stereotype.Service;
 
@@ -18,30 +20,38 @@ public class WowCharacterServiceImpl implements WowCharacterService {
     }
 
     @Override
-    public List<WowCharacter> findAllWowCharacters() {
-        return wowCharacterRepository.findAll();
+    public List<WowCharacterDTO> findAllWowCharacters() {
+        return DTOMapper.parseListObjects(wowCharacterRepository.findAll(), WowCharacterDTO.class);
     }
 
     @Override
-    public WowCharacter findWowCharacterById(Long id) {
-        return wowCharacterRepository.findById(id).orElseThrow(NoSuchElementException::new);
+    public WowCharacterDTO findWowCharacterById(Long id) {
+        var entity = wowCharacterRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        return DTOMapper.parseObject(entity, WowCharacterDTO.class);
     }
 
     @Override
-    public WowCharacter createWowCharacter(WowCharacter wowCharacterToCreate) {
+    public WowCharacterDTO createWowCharacter(WowCharacterDTO wowCharacterToCreate) {
         if (wowCharacterToCreate.getName() != null &&
                 wowCharacterRepository.existsByName(wowCharacterToCreate.getName())) {
             throw new IllegalArgumentException();
         }
-        return wowCharacterRepository.save(wowCharacterToCreate);
+
+        var entity = DTOMapper.parseObject(wowCharacterToCreate, WowCharacter.class);
+        var dto = DTOMapper.parseObject(wowCharacterRepository.save(entity), WowCharacterDTO.class);
+
+        return dto;
     }
 
     @Override
-    public WowCharacter updateWowCharacter(Long id, WowCharacter wowCharacterToUpdate) {
+    public WowCharacterDTO updateWowCharacter(Long id, WowCharacterDTO wowCharacterToUpdate) {
         if (id != null && !wowCharacterRepository.existsById(id)) {
             throw new NoSuchElementException();
         }
-        return wowCharacterRepository.save(wowCharacterToUpdate);
+        var entity = DTOMapper.parseObject(wowCharacterToUpdate, WowCharacter.class);
+        var dto = DTOMapper.parseObject(wowCharacterRepository.save(entity), WowCharacterDTO.class);
+
+        return dto;
     }
 
     @Override

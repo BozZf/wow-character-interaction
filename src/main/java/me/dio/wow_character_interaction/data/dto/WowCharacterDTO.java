@@ -1,14 +1,9 @@
-package me.dio.wow_character_interaction.domain.model;
-
-import jakarta.persistence.*;
+package me.dio.wow_character_interaction.data.dto;
 
 import java.util.Objects;
 
-@Entity(name = "wow_characters")
-public class WowCharacter {
+public class WowCharacterDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -21,7 +16,6 @@ public class WowCharacter {
 
     private String occupation;
 
-    @Column(columnDefinition = "TEXT")
     private String lore;
 
     public Long getId() {
@@ -84,30 +78,12 @@ public class WowCharacter {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WowCharacter that = (WowCharacter) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(gender, that.gender) &&
-                Objects.equals(race, that.race) &&
-                Objects.equals(characterClass, that.characterClass) &&
-                Objects.equals(occupation, that.occupation) &&
-                Objects.equals(lore, that.lore);
+        WowCharacterDTO that = (WowCharacterDTO) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(gender, that.gender) && Objects.equals(race, that.race) && Objects.equals(characterClass, that.characterClass) && Objects.equals(occupation, that.occupation) && Objects.equals(lore, that.lore);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name, gender, race, characterClass, occupation, lore);
-    }
-
-    public String generateContextByQuestion(String question) {
-        return """
-                Question: %s
-                Character Name: %s
-                Gender: %s
-                Race: %s
-                Class: %s
-                Occupation: %s
-                Lore: %s
-                """.formatted(question, this.name, this.gender, this.race, this.characterClass, this.occupation, this.lore);
     }
 }
