@@ -46,7 +46,7 @@ public class MockWowCharacter {
 
     public WowCharacterDTO mockDTO(Integer number) {
         WowCharacterDTO characterDTO = new WowCharacterDTO();
-        characterDTO.setId(number.longValue());
+        characterDTO.setKey(number.longValue());
         characterDTO.setName("Name Test" + number);
         characterDTO.setGender((number % 2) == 0 ? "Male Test" : "Female Test");
         characterDTO.setRace("Race Test" + number);

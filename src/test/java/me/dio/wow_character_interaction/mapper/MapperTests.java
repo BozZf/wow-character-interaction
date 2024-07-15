@@ -23,7 +23,7 @@ public class MapperTests {
     @Test
     public void parseEntityToDTOTest() {
         WowCharacterDTO output = DTOMapper.parseObject(inputObject.mockEntity(), WowCharacterDTO.class);
-        assertEquals(Long.valueOf(0L), output.getId());
+        assertEquals(Long.valueOf(0L), output.getKey());
         assertEquals("Name Test0", output.getName());
         assertEquals("Male Test", output.getGender());
         assertEquals("Race Test0", output.getRace());
@@ -38,7 +38,7 @@ public class MapperTests {
                 WowCharacterDTO.class);
 
         WowCharacterDTO outputZero = outputList.get(0);
-        assertEquals(Long.valueOf(0L), outputZero.getId());
+        assertEquals(Long.valueOf(0L), outputZero.getKey());
         assertEquals("Name Test0", outputZero.getName());
         assertEquals("Male Test", outputZero.getGender());
         assertEquals("Race Test0", outputZero.getRace());
@@ -47,7 +47,7 @@ public class MapperTests {
         assertEquals("Lore Test0", outputZero.getLore());
 
         WowCharacterDTO outputThree = outputList.get(3);
-        assertEquals(Long.valueOf(3L), outputThree.getId());
+        assertEquals(Long.valueOf(3L), outputThree.getKey());
         assertEquals("Name Test3", outputThree.getName());
         assertEquals("Female Test", outputThree.getGender());
         assertEquals("Race Test3", outputThree.getRace());
@@ -56,7 +56,7 @@ public class MapperTests {
         assertEquals("Lore Test3", outputThree.getLore());
 
         WowCharacterDTO outputSix = outputList.get(6);
-        assertEquals(Long.valueOf(6L), outputSix.getId());
+        assertEquals(Long.valueOf(6L), outputSix.getKey());
         assertEquals("Name Test6", outputSix.getName());
         assertEquals("Male Test", outputSix.getGender());
         assertEquals("Race Test6", outputSix.getRace());

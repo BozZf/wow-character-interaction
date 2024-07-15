@@ -1,10 +1,18 @@
 package me.dio.wow_character_interaction.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.github.dozermapper.core.Mapping;
+import org.springframework.hateoas.RepresentationModel;
+
 import java.util.Objects;
 
-public class WowCharacterDTO {
+@JsonPropertyOrder({"id", "name", "gender", "race", "character_class", "occupation", "lore"})
+public class WowCharacterDTO extends RepresentationModel<WowCharacterDTO> {
 
-    private Long id;
+    @JsonProperty("id")
+    @Mapping("id")
+    private Long key;
 
     private String name;
 
@@ -12,18 +20,19 @@ public class WowCharacterDTO {
 
     private String race;
 
+    @JsonProperty("character_class")
     private String characterClass;
 
     private String occupation;
 
     private String lore;
 
-    public Long getId() {
-        return id;
+    public Long getKey() {
+        return key;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setKey(Long key) {
+        this.key = key;
     }
 
     public String getName() {
@@ -79,11 +88,11 @@ public class WowCharacterDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WowCharacterDTO that = (WowCharacterDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(gender, that.gender) && Objects.equals(race, that.race) && Objects.equals(characterClass, that.characterClass) && Objects.equals(occupation, that.occupation) && Objects.equals(lore, that.lore);
+        return Objects.equals(key, that.key) && Objects.equals(name, that.name) && Objects.equals(gender, that.gender) && Objects.equals(race, that.race) && Objects.equals(characterClass, that.characterClass) && Objects.equals(occupation, that.occupation) && Objects.equals(lore, that.lore);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, gender, race, characterClass, occupation, lore);
+        return Objects.hash(key, name, gender, race, characterClass, occupation, lore);
     }
 }

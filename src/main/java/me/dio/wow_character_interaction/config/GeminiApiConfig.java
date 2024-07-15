@@ -1,4 +1,4 @@
-package me.dio.wow_character_interaction.adapter.client;
+package me.dio.wow_character_interaction.config;
 
 import feign.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Value;
