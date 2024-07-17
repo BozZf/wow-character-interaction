@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
         ResponseError error = new ResponseError(
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 HttpStatus.BAD_REQUEST.value(),
-                "Gemini API communication error."
+                "Gemini API communication error!"
         );
         error.setTimestamp(new Date());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -53,8 +53,18 @@ public class GlobalExceptionHandler {
         ResponseError error = new ResponseError(
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected error occurred");
+                "An unexpected error occurred!");
         error.setTimestamp(new Date());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(RequiredObjectIsNull.class)
+    public ResponseEntity<ResponseError> handleRequiredObjectIsNull(RequiredObjectIsNull roin, WebRequest request) {
+        ResponseError error = new ResponseError(
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                HttpStatus.BAD_REQUEST.value(),
+                "You can not persist null objects!");
+        error.setTimestamp(new Date());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }

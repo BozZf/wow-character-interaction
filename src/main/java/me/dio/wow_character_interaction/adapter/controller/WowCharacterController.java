@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/character")
+@RequestMapping("/api/character/v1")
 public class WowCharacterController {
 
     private final WowCharacterService wowCharacterService;

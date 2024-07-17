@@ -4,7 +4,7 @@ import me.dio.wow_character_interaction.application.AskCharacterUseCase;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/characters")
+@RequestMapping("/api/character/v1")
 public class AskWowCharacterController {
 
     private final AskCharacterUseCase askCharacterUseCase;
