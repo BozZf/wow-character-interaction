@@ -1,4 +1,4 @@
-package me.dio.wow_character_interaction.config;
+package me.dio.wow_character_interaction.configs;
 
 import me.dio.wow_character_interaction.serializationConverter.Yaml2HttpMessageConverter;
 import org.springframework.context.annotation.Configuration;

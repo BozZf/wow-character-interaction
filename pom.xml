@@ -31,6 +31,8 @@
 		<spring-cloud.version>2023.0.2</spring-cloud.version>
 		<dozer-version>7.0.0</dozer-version>
 		<spring-doc.version>2.0.4</spring-doc.version>
+		<rest-assured.version>5.5.0</rest-assured.version>
+		<testcontainers.version>1.20.0</testcontainers.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -78,6 +80,18 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>${rest-assured.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
 
