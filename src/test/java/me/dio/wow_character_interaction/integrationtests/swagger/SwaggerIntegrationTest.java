@@ -1,6 +1,6 @@
 package me.dio.wow_character_interaction.integrationtests.swagger;
 
-import me.dio.wow_character_interaction.configs.DockerTestConfig;
+import me.dio.wow_character_interaction.configs.TestsConfig;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +17,7 @@ public class SwaggerIntegrationTest extends AbstractIntegrationTest {
     public void shouldDisplaySwaggerUiPage() {
         var content = given()
                         .basePath("/swagger-ui/index.html")
-                        .port(DockerTestConfig.SERVER_PORT)
+                        .port(TestsConfig.SERVER_PORT)
                         .when()
                             .get()
                         .then()
