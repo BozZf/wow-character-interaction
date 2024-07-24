@@ -1,1 +1,0 @@
-ALTER TABLE public.wow_characters OWNER TO postgres;
