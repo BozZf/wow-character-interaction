@@ -1,8 +1,7 @@
 package me.dio.wow_character_interaction.services;
 
-import me.dio.wow_character_interaction.adapter.controller.exception.RequiredObjectIsNull;
 import me.dio.wow_character_interaction.adapter.repository.WowCharacterRepository;
-import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
+import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.domain.model.WowCharacter;
 import me.dio.wow_character_interaction.mapper.mocks.MockWowCharacter;
 import me.dio.wow_character_interaction.service.impl.WowCharacterServiceImpl;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -117,7 +115,7 @@ public class WowCharacterServiceImplTest {
     @Test
     void createWowCharacter() {
         WowCharacter character = input.mockEntity(1);
-        WowCharacterDTO dto = input.mockDTO(1);
+        WowCharacterDto dto = input.mockDTO(1);
 
         when(wowCharacterRepository.save(character)).thenReturn(character);
 
@@ -143,7 +141,7 @@ public class WowCharacterServiceImplTest {
     void updateWowCharacter() {
         WowCharacter character = input.mockEntity(1);
         character.setId(1L);
-        WowCharacterDTO dto = input.mockDTO(1);
+        WowCharacterDto dto = input.mockDTO(1);
         dto.setKey(1L);
 
         when(wowCharacterRepository.findById(1L)).thenReturn(Optional.of(character));

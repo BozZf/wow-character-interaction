@@ -3,7 +3,7 @@ package me.dio.wow_character_interaction.service.impl;
 import me.dio.wow_character_interaction.adapter.controller.AskWowCharacterController;
 import me.dio.wow_character_interaction.adapter.controller.WowCharacterController;
 import me.dio.wow_character_interaction.adapter.controller.exception.RequiredObjectIsNull;
-import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
+import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.adapter.repository.WowCharacterRepository;
 import me.dio.wow_character_interaction.domain.model.WowCharacter;
 import me.dio.wow_character_interaction.mapper.DTOMapper;
@@ -26,8 +26,8 @@ public class WowCharacterServiceImpl implements WowCharacterService {
     }
 
     @Override
-    public List<WowCharacterDTO> findAllWowCharacters() {
-        var characters = DTOMapper.parseListObjects(wowCharacterRepository.findAll(), WowCharacterDTO.class);
+    public List<WowCharacterDto> findAllWowCharacters() {
+        var characters = DTOMapper.parseListObjects(wowCharacterRepository.findAll(), WowCharacterDto.class);
 
         characters.forEach(c -> addLinks(c));
 
@@ -35,9 +35,9 @@ public class WowCharacterServiceImpl implements WowCharacterService {
     }
 
     @Override
-    public WowCharacterDTO findWowCharacterById(Long id) {
+    public WowCharacterDto findWowCharacterById(Long id) {
         var entity = wowCharacterRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        WowCharacterDTO dto = DTOMapper.parseObject(entity, WowCharacterDTO.class);
+        WowCharacterDto dto = DTOMapper.parseObject(entity, WowCharacterDto.class);
 
         addLinks(dto);
 
@@ -45,7 +45,7 @@ public class WowCharacterServiceImpl implements WowCharacterService {
     }
 
     @Override
-    public WowCharacterDTO createWowCharacter(WowCharacterDTO wowCharacterToCreateDTO) {
+    public WowCharacterDto createWowCharacter(WowCharacterDto wowCharacterToCreateDTO) {
         if (wowCharacterToCreateDTO == null) {
             throw new RequiredObjectIsNull();
         }
@@ -55,7 +55,7 @@ public class WowCharacterServiceImpl implements WowCharacterService {
         }
 
         var entity = DTOMapper.parseObject(wowCharacterToCreateDTO, WowCharacter.class);
-        var dto = DTOMapper.parseObject(wowCharacterRepository.save(entity), WowCharacterDTO.class);
+        var dto = DTOMapper.parseObject(wowCharacterRepository.save(entity), WowCharacterDto.class);
 
         addLinks(dto);
 
@@ -63,7 +63,7 @@ public class WowCharacterServiceImpl implements WowCharacterService {
     }
 
     @Override
-    public WowCharacterDTO updateWowCharacter(Long id, WowCharacterDTO wowCharacterToUpdateDTO) {
+    public WowCharacterDto updateWowCharacter(Long id, WowCharacterDto wowCharacterToUpdateDTO) {
         if (wowCharacterToUpdateDTO == null) {
             throw new RequiredObjectIsNull();
         }
@@ -72,7 +72,7 @@ public class WowCharacterServiceImpl implements WowCharacterService {
 
         updateNotNullFields(entity, wowCharacterToUpdateDTO);
 
-        var dto = DTOMapper.parseObject(wowCharacterRepository.save(entity), WowCharacterDTO.class);
+        var dto = DTOMapper.parseObject(wowCharacterRepository.save(entity), WowCharacterDto.class);
 
         addLinks(dto);
 
@@ -87,7 +87,7 @@ public class WowCharacterServiceImpl implements WowCharacterService {
         wowCharacterRepository.deleteById(id);
     }
 
-    private void addLinks(WowCharacterDTO dto) {
+    private void addLinks(WowCharacterDto dto) {
         dto.add(linkTo(methodOn(WowCharacterController.class).getCharacterById(dto.getKey())).withSelfRel());
         dto.add(linkTo(methodOn(WowCharacterController.class)
                 .putCharacter(dto.getKey(), null))
@@ -95,7 +95,7 @@ public class WowCharacterServiceImpl implements WowCharacterService {
         dto.add(linkTo(AskWowCharacterController.class).withRel("Ask a Question to " + dto.getName()));
     }
 
-    private void updateNotNullFields(WowCharacter entity, WowCharacterDTO dto) {
+    private void updateNotNullFields(WowCharacter entity, WowCharacterDto dto) {
         if (dto.getName() != null) {
             entity.setName(dto.getName());
         }

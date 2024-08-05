@@ -67,4 +67,15 @@ public class GlobalExceptionHandler {
         error.setTimestamp(new Date());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(InvalidJwtAuthenticationException.class)
+    public ResponseEntity<ResponseError> handleRequiredObjectIsNull(InvalidJwtAuthenticationException ijae,
+                                                                    WebRequest request) {
+        ResponseError error = new ResponseError(
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                HttpStatus.FORBIDDEN.value(),
+                "You don't have enough authorization to proceed!");
+        error.setTimestamp(new Date());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
 }

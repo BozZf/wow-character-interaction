@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
+import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.service.WowCharacterService;
 import me.dio.wow_character_interaction.util.MediaType;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/character/v1")
+@RequestMapping("/api/v1/character")
 @Tag(name = "WOW Characters", description = "Endpoints for managing World Of Warcraft characters")
 public class WowCharacterController {
 
@@ -26,7 +26,7 @@ public class WowCharacterController {
         this.wowCharacterService = wowCharacterService;
     }
 
-    @GetMapping(produces = {
+    @GetMapping(value = "/find-all", produces = {
             MediaType.APPLICATION_JSON,
             MediaType.APPLICATION_XML,
             MediaType.APPLICATION_YAML})
@@ -38,24 +38,24 @@ public class WowCharacterController {
                     content = {
                         @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = WowCharacterDTO.class))),
+                            array = @ArraySchema(schema = @Schema(implementation = WowCharacterDto.class))),
                         @Content(
                             mediaType = "application/xml",
-                            array = @ArraySchema(schema = @Schema(implementation = WowCharacterDTO.class))),
+                            array = @ArraySchema(schema = @Schema(implementation = WowCharacterDto.class))),
                         @Content(
                             mediaType = "application/x-yaml",
-                            array = @ArraySchema(schema = @Schema(implementation = WowCharacterDTO.class)))
+                            array = @ArraySchema(schema = @Schema(implementation = WowCharacterDto.class)))
                 }),
                 @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                 @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
                 @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                 @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public List<WowCharacterDTO> getAllCharacters() {
+    public List<WowCharacterDto> getAllCharacters() {
         return wowCharacterService.findAllWowCharacters();
     }
 
-    @GetMapping(value = "/{id}",
+    @GetMapping(value = "/find/{id}",
             produces = {
                 MediaType.APPLICATION_JSON,
                 MediaType.APPLICATION_XML,
@@ -68,13 +68,13 @@ public class WowCharacterController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = WowCharacterDTO.class)),
+                                            schema = @Schema(implementation = WowCharacterDto.class)),
                                     @Content(
                                             mediaType = "application/xml",
-                                            schema = @Schema(implementation = WowCharacterDTO.class)),
+                                            schema = @Schema(implementation = WowCharacterDto.class)),
                                     @Content(
                                             mediaType = "application/x-yaml",
-                                            schema = @Schema(implementation = WowCharacterDTO.class))
+                                            schema = @Schema(implementation = WowCharacterDto.class))
                             }),
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -82,11 +82,11 @@ public class WowCharacterController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<WowCharacterDTO> getCharacterById(@PathVariable Long id) {
+    public ResponseEntity<WowCharacterDto> getCharacterById(@PathVariable Long id) {
         return ResponseEntity.ok(wowCharacterService.findWowCharacterById(id));
     }
 
-    @PostMapping(consumes = {
+    @PostMapping(value = "/create", consumes = {
                 MediaType.APPLICATION_JSON,
                 MediaType.APPLICATION_XML,
                 MediaType.APPLICATION_YAML},
@@ -102,23 +102,23 @@ public class WowCharacterController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = WowCharacterDTO.class)),
+                                            schema = @Schema(implementation = WowCharacterDto.class)),
                                     @Content(
                                             mediaType = "application/xml",
-                                            schema = @Schema(implementation = WowCharacterDTO.class)),
+                                            schema = @Schema(implementation = WowCharacterDto.class)),
                                     @Content(
                                             mediaType = "application/x-yaml",
-                                            schema = @Schema(implementation = WowCharacterDTO.class))
+                                            schema = @Schema(implementation = WowCharacterDto.class))
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<WowCharacterDTO> postCharacter(@RequestBody WowCharacterDTO wowCharacterToCreate) {
+    public ResponseEntity<WowCharacterDto> postCharacter(@RequestBody WowCharacterDto wowCharacterToCreate) {
         return ResponseEntity.ok(wowCharacterService.createWowCharacter(wowCharacterToCreate));
     }
 
-    @PutMapping(value = "/{id}",
+    @PutMapping(value = "/update/{id}",
             consumes = {
                     MediaType.APPLICATION_JSON,
                     MediaType.APPLICATION_XML,
@@ -135,25 +135,25 @@ public class WowCharacterController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = WowCharacterDTO.class)),
+                                            schema = @Schema(implementation = WowCharacterDto.class)),
                                     @Content(
                                             mediaType = "application/xml",
-                                            schema = @Schema(implementation = WowCharacterDTO.class)),
+                                            schema = @Schema(implementation = WowCharacterDto.class)),
                                     @Content(
                                             mediaType = "application/x-yaml",
-                                            schema = @Schema(implementation = WowCharacterDTO.class))
+                                            schema = @Schema(implementation = WowCharacterDto.class))
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<WowCharacterDTO> putCharacter(@PathVariable Long id,
-                                                     @RequestBody WowCharacterDTO wowCharacterToPut) {
+    public ResponseEntity<WowCharacterDto> putCharacter(@PathVariable Long id,
+                                                        @RequestBody WowCharacterDto wowCharacterToPut) {
         return ResponseEntity.ok(wowCharacterService.updateWowCharacter(id, wowCharacterToPut));
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a character",
             description = "Delete a character from data base passing his ID.",

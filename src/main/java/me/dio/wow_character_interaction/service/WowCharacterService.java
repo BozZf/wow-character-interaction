@@ -1,19 +1,18 @@
 package me.dio.wow_character_interaction.service;
 
-import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
-import me.dio.wow_character_interaction.domain.model.WowCharacter;
+import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 
 import java.util.List;
 
 public interface WowCharacterService {
 
-    List<WowCharacterDTO> findAllWowCharacters();
+    List<WowCharacterDto> findAllWowCharacters();
 
-    WowCharacterDTO findWowCharacterById(Long id);
+    WowCharacterDto findWowCharacterById(Long id);
 
-    WowCharacterDTO createWowCharacter(WowCharacterDTO wowCharacterToCreate);
+    WowCharacterDto createWowCharacter(WowCharacterDto wowCharacterToCreate);
 
-    WowCharacterDTO updateWowCharacter(Long id, WowCharacterDTO wowCharacterToUpdate);
+    WowCharacterDto updateWowCharacter(Long id, WowCharacterDto wowCharacterToUpdate);
 
     void deleteWowCharacter(Long id);
 }

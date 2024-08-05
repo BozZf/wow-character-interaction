@@ -8,7 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 import java.util.Objects;
 
 @JsonPropertyOrder({"id", "name", "gender", "race", "character_class", "occupation", "lore"})
-public class WowCharacterDTO extends RepresentationModel<WowCharacterDTO> {
+public class WowCharacterDto extends RepresentationModel<WowCharacterDto> {
 
     @JsonProperty("id")
     @Mapping("id")
@@ -87,7 +87,7 @@ public class WowCharacterDTO extends RepresentationModel<WowCharacterDTO> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WowCharacterDTO that = (WowCharacterDTO) o;
+        WowCharacterDto that = (WowCharacterDto) o;
         return Objects.equals(key, that.key) && Objects.equals(name, that.name) && Objects.equals(gender, that.gender) && Objects.equals(race, that.race) && Objects.equals(characterClass, that.characterClass) && Objects.equals(occupation, that.occupation) && Objects.equals(lore, that.lore);
     }
 

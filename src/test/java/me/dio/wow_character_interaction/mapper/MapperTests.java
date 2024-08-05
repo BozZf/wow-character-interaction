@@ -6,7 +6,7 @@ import me.dio.wow_character_interaction.domain.model.WowCharacter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
+import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.mapper.mocks.MockWowCharacter;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class MapperTests {
 
     @Test
     public void parseEntityToDTOTest() {
-        WowCharacterDTO output = DTOMapper.parseObject(inputObject.mockEntity(), WowCharacterDTO.class);
+        WowCharacterDto output = DTOMapper.parseObject(inputObject.mockEntity(), WowCharacterDto.class);
         assertEquals(Long.valueOf(0L), output.getKey());
         assertEquals("Name Test0", output.getName());
         assertEquals("Male Test", output.getGender());
@@ -34,10 +34,10 @@ public class MapperTests {
 
     @Test
     public void parseEntityListToDTOListTest() {
-        List<WowCharacterDTO> outputList = DTOMapper.parseListObjects(inputObject.mockEntityList(),
-                WowCharacterDTO.class);
+        List<WowCharacterDto> outputList = DTOMapper.parseListObjects(inputObject.mockEntityList(),
+                WowCharacterDto.class);
 
-        WowCharacterDTO outputZero = outputList.get(0);
+        WowCharacterDto outputZero = outputList.get(0);
         assertEquals(Long.valueOf(0L), outputZero.getKey());
         assertEquals("Name Test0", outputZero.getName());
         assertEquals("Male Test", outputZero.getGender());
@@ -46,7 +46,7 @@ public class MapperTests {
         assertEquals("Occupation Test0", outputZero.getOccupation());
         assertEquals("Lore Test0", outputZero.getLore());
 
-        WowCharacterDTO outputThree = outputList.get(3);
+        WowCharacterDto outputThree = outputList.get(3);
         assertEquals(Long.valueOf(3L), outputThree.getKey());
         assertEquals("Name Test3", outputThree.getName());
         assertEquals("Female Test", outputThree.getGender());
@@ -55,7 +55,7 @@ public class MapperTests {
         assertEquals("Occupation Test3", outputThree.getOccupation());
         assertEquals("Lore Test3", outputThree.getLore());
 
-        WowCharacterDTO outputSix = outputList.get(6);
+        WowCharacterDto outputSix = outputList.get(6);
         assertEquals(Long.valueOf(6L), outputSix.getKey());
         assertEquals("Name Test6", outputSix.getName());
         assertEquals("Male Test", outputSix.getGender());

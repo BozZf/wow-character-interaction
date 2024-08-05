@@ -1,6 +1,6 @@
 package me.dio.wow_character_interaction.mapper.mocks;
 
-import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
+import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.domain.model.WowCharacter;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class MockWowCharacter {
         return mockEntity(0);
     }
 
-    public WowCharacterDTO mockDTO() {
+    public WowCharacterDto mockDTO() {
         return mockDTO(0);
     }
 
@@ -24,8 +24,8 @@ public class MockWowCharacter {
         return characters;
     }
 
-    public List<WowCharacterDTO> mockDTOList() {
-        List<WowCharacterDTO> characters = new ArrayList<>();
+    public List<WowCharacterDto> mockDTOList() {
+        List<WowCharacterDto> characters = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             characters.add(mockDTO(i));
         }
@@ -44,8 +44,8 @@ public class MockWowCharacter {
         return character;
     }
 
-    public WowCharacterDTO mockDTO(Integer number) {
-        WowCharacterDTO characterDTO = new WowCharacterDTO();
+    public WowCharacterDto mockDTO(Integer number) {
+        WowCharacterDto characterDTO = new WowCharacterDto();
         characterDTO.setKey(number.longValue());
         characterDTO.setName("Name Test" + number);
         characterDTO.setGender((number % 2) == 0 ? "Male Test" : "Female Test");

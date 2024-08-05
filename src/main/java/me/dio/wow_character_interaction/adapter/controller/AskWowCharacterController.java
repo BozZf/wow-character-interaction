@@ -6,12 +6,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dio.wow_character_interaction.application.AskCharacterUseCase;
-import me.dio.wow_character_interaction.data.dto.WowCharacterDTO;
 import me.dio.wow_character_interaction.util.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/character/v1")
+@RequestMapping("/api/v1/character")
 @Tag(name = "WOW Characters Chat", description = "Endpoint to chat with a World Of Warcraft character.")
 public class AskWowCharacterController {
 
@@ -21,7 +20,7 @@ public class AskWowCharacterController {
         this.askCharacterUseCase = askCharacterUseCase;
     }
 
-    @PostMapping(value = "/{id}/ask",
+    @PostMapping(value = "/ask/{id}",
             consumes = { MediaType.APPLICATION_JSON },
             produces = { MediaType.APPLICATION_JSON })
     @Operation(summary = "Chat with a character",

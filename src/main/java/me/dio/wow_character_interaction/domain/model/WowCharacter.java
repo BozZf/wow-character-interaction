@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.Objects;
 
-@Entity(name = "wow_characters")
+@Entity
+@Table(name = "wow_characters")
 public class WowCharacter {
 
     @Id
