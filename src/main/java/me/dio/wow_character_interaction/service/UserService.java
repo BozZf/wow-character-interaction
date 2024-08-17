@@ -1,10 +1,11 @@
 package me.dio.wow_character_interaction.service;
 
+import me.dio.wow_character_interaction.data.dto.UserDto;
 import me.dio.wow_character_interaction.domain.model.User;
 
 public interface UserService {
 
-    User createUser(User userToCreate);
+    UserDto createUser(UserDto dtoToCreate);
 
-    User updateUser(String username, User userToUpdate);
+    UserDto updateUser(String username, UserDto dtoToUpdate);
 }

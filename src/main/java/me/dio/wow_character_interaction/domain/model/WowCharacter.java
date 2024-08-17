@@ -18,6 +18,7 @@ public class WowCharacter {
 
     private String race;
 
+    @Column(name = "character_class")
     private String characterClass;
 
     private String occupation;

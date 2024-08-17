@@ -18,7 +18,7 @@ public record AskCharacterUseCase(WowCharacterRepository wowCharacterRepository,
         String objective = """
                 Act like you are a World Of Warcraft(WOW) character.
                 Answer the questions incorporating the persona of a certain character.
-                Here's the question, the name of the character and his lore:
+                Here's the question, the infos of the character and his lore:
                 
                 """;
         String context = wowCharacter.generateContextByQuestion(question);

@@ -51,7 +51,7 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/api/v1/character/find-all",
                                         "/api/v1/character/find/{id}",
-                                        "/api/v1/users/update",
+                                        "/api/v1/users/update/**",
                                         "/api/v1/character/ask/{id}"
                                 ).authenticated()
                                 .requestMatchers(

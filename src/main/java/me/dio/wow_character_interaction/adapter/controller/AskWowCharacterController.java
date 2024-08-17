@@ -21,16 +21,30 @@ public class AskWowCharacterController {
     }
 
     @PostMapping(value = "/ask/{id}",
-            consumes = { MediaType.APPLICATION_JSON },
-            produces = { MediaType.APPLICATION_JSON })
+            consumes = {
+                    MediaType.APPLICATION_JSON,
+                    MediaType.APPLICATION_XML,
+                    MediaType.APPLICATION_YAML},
+            produces = {
+                    MediaType.APPLICATION_JSON,
+                    MediaType.APPLICATION_XML,
+                    MediaType.APPLICATION_YAML})
     @Operation(summary = "Chat with a character",
             description = "Chat with a World Of Warcraft character.",
             tags = {"WOW Characters Chat"},
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(
+                            content = {
+                                    @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(type = "string"))),
+                                            schema = @Schema(type = "string")),
+                                    @Content(
+                                            mediaType = "application/xml",
+                                            schema = @Schema(type = "string")),
+                                    @Content(
+                                            mediaType = "application/x-yaml",
+                                            schema = @Schema(type = "string"))
+                            }),
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
