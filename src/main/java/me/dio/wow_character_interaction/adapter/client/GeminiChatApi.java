@@ -1,6 +1,6 @@
 package me.dio.wow_character_interaction.adapter.client;
 
-import me.dio.wow_character_interaction.config.GeminiApiConfig;
+import me.dio.wow_character_interaction.configs.GeminiApiConfig;
 import me.dio.wow_character_interaction.service.GeminiService;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

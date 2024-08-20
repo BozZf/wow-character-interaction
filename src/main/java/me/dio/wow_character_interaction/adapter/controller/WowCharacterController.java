@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.service.WowCharacterService;
@@ -33,6 +34,7 @@ public class WowCharacterController {
     @Operation(summary = "Finds all characters",
             description = "Return a list of all characters.",
             tags = {"WOW Characters"},
+            security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                 @ApiResponse(description = "Success", responseCode = "200",
                     content = {
@@ -63,6 +65,7 @@ public class WowCharacterController {
     @Operation(summary = "Find a character",
             description = "Find and return a character passing his ID.",
             tags = {"WOW Characters"},
+            security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
                             content = {
@@ -97,6 +100,7 @@ public class WowCharacterController {
     @Operation(summary = "Add a character",
             description = "Add a character to data base by passing a representation in a JSON, XML or YAML format.",
             tags = {"WOW Characters"},
+            security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
                             content = {
@@ -130,6 +134,7 @@ public class WowCharacterController {
     @Operation(summary = "Update a character",
             description = "Update a character data by passing a representation in a JSON, XML or YAML format.",
             tags = {"WOW Characters"},
+            security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
                             content = {
@@ -158,6 +163,7 @@ public class WowCharacterController {
     @Operation(summary = "Delete a character",
             description = "Delete a character from data base passing his ID.",
             tags = {"WOW Characters"},
+            security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),

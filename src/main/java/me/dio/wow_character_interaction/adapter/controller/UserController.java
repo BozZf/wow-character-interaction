@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dio.wow_character_interaction.config.UsernameEnc;
 import me.dio.wow_character_interaction.data.dto.UserDto;
@@ -76,6 +77,7 @@ public class UserController {
     @Operation(summary = "Update a User",
             description = "Update a User full name or password passing a representation in a JSON, XML or YAML format.",
             tags = {"User Endpoints"},
+            security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
                             content = {

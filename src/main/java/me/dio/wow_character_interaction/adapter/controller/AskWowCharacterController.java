@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.dio.wow_character_interaction.application.AskCharacterUseCase;
 import me.dio.wow_character_interaction.util.MediaType;
@@ -32,6 +33,7 @@ public class AskWowCharacterController {
     @Operation(summary = "Chat with a character",
             description = "Chat with a World Of Warcraft character.",
             tags = {"WOW Characters Chat"},
+            security = @SecurityRequirement(name = "bearerAuth"),
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
                             content = {
