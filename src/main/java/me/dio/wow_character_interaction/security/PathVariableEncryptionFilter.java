@@ -3,7 +3,7 @@ package me.dio.wow_character_interaction.security;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-import me.dio.wow_character_interaction.config.UsernameEnc;
+import me.dio.wow_character_interaction.configs.UsernameEnc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

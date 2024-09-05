@@ -4,13 +4,17 @@ import me.dio.wow_character_interaction.configs.TestsConfig;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@TestPropertySource(properties = "server.port=8888")
+@ContextConfiguration(
+        initializers = AbstractIntegrationTest.Initializer.class
+)
+@TestPropertySource("classpath:application-test.properties")
 public class SwaggerIntegrationTest extends AbstractIntegrationTest {
 
     @Test

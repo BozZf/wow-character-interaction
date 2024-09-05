@@ -1,4 +1,4 @@
-package me.dio.wow_character_interaction.dto;
+package me.dio.wow_character_interaction.integrationtests.dto;
 
 import java.util.Objects;
 

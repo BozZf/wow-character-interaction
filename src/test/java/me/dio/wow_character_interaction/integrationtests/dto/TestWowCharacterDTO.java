@@ -2,7 +2,7 @@ package me.dio.wow_character_interaction.integrationtests.dto;
 
 import java.util.Objects;
 
-public class WowCharacterDTO {
+public class TestWowCharacterDTO {
 
     private Long id;
 
@@ -78,7 +78,7 @@ public class WowCharacterDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WowCharacterDTO that = (WowCharacterDTO) o;
+        TestWowCharacterDTO that = (TestWowCharacterDTO) o;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(gender, that.gender) && Objects.equals(race, that.race) && Objects.equals(characterClass, that.characterClass) && Objects.equals(occupation, that.occupation) && Objects.equals(lore, that.lore);
     }
 

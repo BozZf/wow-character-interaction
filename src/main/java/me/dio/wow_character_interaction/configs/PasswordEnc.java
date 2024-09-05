@@ -1,4 +1,4 @@
-package me.dio.wow_character_interaction.config;
+package me.dio.wow_character_interaction.configs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

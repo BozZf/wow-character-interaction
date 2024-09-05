@@ -1,4 +1,4 @@
-package me.dio.wow_character_interaction.config;
+package me.dio.wow_character_interaction.configs;
 
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
