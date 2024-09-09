@@ -1,12 +1,17 @@
 package me.dio.wow_character_interaction.data.dto.security;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 import java.util.Objects;
 
+@JacksonXmlRootElement
 public class AccountCredentialsDto {
 
     private String username;
 
     private String password;
+
+    public AccountCredentialsDto() {}
 
     public AccountCredentialsDto(String username, String password) {
         this.username = username;

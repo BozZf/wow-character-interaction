@@ -8,6 +8,8 @@ public class TestAccountCredentialsDto {
 
     private String password;
 
+    public TestAccountCredentialsDto() {}
+
     public TestAccountCredentialsDto(String username, String password) {
         this.username = username;
         this.password = password;

@@ -1,5 +1,7 @@
 package me.dio.wow_character_interaction.integrationtests.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class TestWowCharacterDTO {
@@ -12,6 +14,7 @@ public class TestWowCharacterDTO {
 
     private String race;
 
+    @JsonProperty("character_class")
     private String characterClass;
 
     private String occupation;

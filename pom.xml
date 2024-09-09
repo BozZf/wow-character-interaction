@@ -33,6 +33,8 @@
 		<spring-doc.version>2.0.4</spring-doc.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
 		<slf4j.version>2.0.13</slf4j.version>
+		<jackson-xml.version>2.17.2</jackson-xml.version>
+		<jackson-yaml.version>2.17.1</jackson-yaml.version>
 		<rest-assured.version>5.5.0</rest-assured.version>
 		<testcontainers.version>1.20.0</testcontainers.version>
 	</properties>
@@ -44,6 +46,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -82,6 +94,12 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>${jackson-xml.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>${jackson-yaml.version}</version>
 		</dependency>
 
 		<dependency>
