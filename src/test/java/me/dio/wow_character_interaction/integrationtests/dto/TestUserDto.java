@@ -7,8 +7,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Objects;
 
-@JsonPropertyOrder({"user_name", "full_name", "password"})
-public class TestUserDto extends RepresentationModel<TestUserDto> {
+public class TestUserDto {
 
     @JsonProperty("user_name")
     @Mapping("username")

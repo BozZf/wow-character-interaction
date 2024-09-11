@@ -53,7 +53,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
     @Test
     @Order(0)
     public void authorization() throws JsonMappingException, JsonProcessingException {
-        TestAccountCredentialsDto user = new TestAccountCredentialsDto("Admin", "Admin123");
+        TestAccountCredentialsDto user = new TestAccountCredentialsDto("TestAdmin", "TestAdmin123");
 
         var content = given()
                 .config(RestAssured

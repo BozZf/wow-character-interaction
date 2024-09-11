@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         ResponseError error = new ResponseError(
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 HttpStatus.BAD_REQUEST.value(),
-                "This ID does not exist."
+                nsee.getMessage()
         );
         error.setTimestamp(new Date());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

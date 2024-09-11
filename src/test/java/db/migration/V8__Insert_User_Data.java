@@ -23,13 +23,13 @@ public class V8__Insert_User_Data extends BaseJavaMigration {
                 Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256
         );
 
-        String encryptedPassword = passwordEncoder.encode("Admin123");
+        String encryptedPassword = passwordEncoder.encode("TestAdmin123");
 
         try (PreparedStatement statement = context.getConnection().prepareStatement(
                 "INSERT INTO users (user_name, full_name, password, account_non_expired, account_non_locked," +
                         " credentials_non_expired, enabled) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
-            statement.setString(1, "Admin");
-            statement.setString(2, "Admin");
+            statement.setString(1, "TestAdmin");
+            statement.setString(2, "TestAdminFullName");
             statement.setString(3, encryptedPassword);
             statement.setBoolean(4, true);
             statement.setBoolean(5, true);
