@@ -56,17 +56,17 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
         mockUser();
 
         var content = given()
-                .basePath("/api/v1/users")
-                .port(TestsConfig.SERVER_PORT)
-                .contentType(TestsConfig.CONTENT_TYPE_JSON)
-                    .body(userDto)
-                .when()
-                    .post("/create")
-                .then()
-                    .statusCode(200)
-                .extract()
-                    .body()
-                        .asString();
+                        .basePath("/api/v1/users")
+                        .port(TestsConfig.SERVER_PORT)
+                        .contentType(TestsConfig.CONTENT_TYPE_JSON)
+                            .body(userDto)
+                        .when()
+                            .post("/create")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
 
         TestUserDto createdUser = objectMapper.readValue(content, TestUserDto.class);
 
@@ -87,25 +87,26 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
                                                 "TestPassword123");
 
         var accessToken = given()
-                .basePath("/api/v1/auth")
-                .port(TestsConfig.SERVER_PORT)
-                .contentType(TestsConfig.CONTENT_TYPE_JSON)
-                    .body(credentialsDto)
-                .when()
-                    .post("/signin")
-                .then()
-                    .statusCode(200)
-                .extract()
-                    .body()
-                        .as(TestTokenDto.class)
-                            .getAccessToken();
+                            .basePath("/api/v1/auth")
+                            .port(TestsConfig.SERVER_PORT)
+                            .contentType(TestsConfig.CONTENT_TYPE_JSON)
+                                .body(credentialsDto)
+                            .when()
+                                .post("/signin")
+                            .then()
+                                .statusCode(200)
+                            .extract()
+                                .body()
+                                    .as(TestTokenDto.class)
+                                        .getAccessToken();
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
-                .setPort(TestsConfig.SERVER_PORT)
-                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
+                                .setBasePath("/api/v1/users")
+                                .setPort(TestsConfig.SERVER_PORT)
+                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                                .build();
     }
 
     @Test
@@ -114,18 +115,17 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
         updateMockedUser();
 
         var content = given()
-                .spec(specification)
-                .basePath("/api/v1/users")
-                .pathParam("username", "TestName")
-                .contentType(TestsConfig.CONTENT_TYPE_JSON)
-                    .body(userDto)
-                .when()
-                    .put("/update/{username}")
-                .then()
-                    .statusCode(200)
-                .extract()
-                    .body()
-                        .asString();
+                        .spec(specification)
+                        .pathParam("username", "TestName")
+                        .contentType(TestsConfig.CONTENT_TYPE_JSON)
+                            .body(userDto)
+                        .when()
+                            .put("/update/{username}")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
 
         TestUserDto updatedUser = objectMapper.readValue(content, TestUserDto.class);
 

@@ -10,9 +10,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
-import me.dio.wow_character_interaction.integrationtests.dto.TestAccountCredentialsDto;
-import me.dio.wow_character_interaction.integrationtests.dto.TestTokenDto;
-import me.dio.wow_character_interaction.integrationtests.dto.TestWowCharacterDTO;
+import me.dio.wow_character_interaction.integrationtests.dto.*;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,26 +50,27 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         TestAccountCredentialsDto user = new TestAccountCredentialsDto("TestAdmin", "TestAdmin123");
 
         var accessToken = given()
-                .basePath("/api/v1/auth")
-                    .port(TestsConfig.SERVER_PORT)
-                    .contentType(TestsConfig.CONTENT_TYPE_XML)
-                    .accept(TestsConfig.CONTENT_TYPE_XML)
-                .body(objectMapper.writeValueAsString(user))
-                    .when()
-                .post("/signin")
-                    .then()
-                        .statusCode(200)
+                            .basePath("/api/v1/auth")
+                            .port(TestsConfig.SERVER_PORT)
+                            .contentType(TestsConfig.CONTENT_TYPE_XML)
+                            .accept(TestsConfig.CONTENT_TYPE_XML)
+                            .body(objectMapper.writeValueAsString(user))
+                            .when()
+                                .post("/signin")
+                            .then()
+                                    .statusCode(200)
                             .extract()
                                 .body()
                                     .as(TestTokenDto.class)
                                         .getAccessToken();
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
-                .setPort(TestsConfig.SERVER_PORT)
-                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
+                                .setBasePath("/api/v1/character")
+                                .setPort(TestsConfig.SERVER_PORT)
+                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                                .build();
     }
 
     @Test
@@ -79,11 +78,10 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
     public void testCreate() throws IOException {
         mockCharacterDto();
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .contentType(TestsConfig.CONTENT_TYPE_XML)
                         .accept(TestsConfig.CONTENT_TYPE_XML)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                             .body(objectMapper.writeValueAsString(characterDto))
                         .when()
                             .post("/create")
@@ -119,18 +117,17 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
     @Order(2)
     public void testFindAll() throws IOException {
 
-        var content = given().spec(specification)
-                .basePath("/api/v1/character")
-                .contentType(TestsConfig.CONTENT_TYPE_XML)
-                .accept(TestsConfig.CONTENT_TYPE_XML)
-                .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
-                .when()
-                .get("/find-all")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
+        var content = given()
+                            .spec(specification)
+                            .contentType(TestsConfig.CONTENT_TYPE_XML)
+                            .accept(TestsConfig.CONTENT_TYPE_XML)
+                            .when()
+                                .get("/find-all")
+                            .then()
+                                .statusCode(200)
+                            .extract()
+                                .body()
+                                    .asString();
 
         List<TestWowCharacterDTO> characters = Arrays.asList(objectMapper
                 .readValue(content, TestWowCharacterDTO[].class));
@@ -162,18 +159,16 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
     public void testFindById() throws IOException {
 
         var content = given().spec(specification)
-                .basePath("/api/v1/character")
                 .contentType(TestsConfig.CONTENT_TYPE_XML)
                 .accept(TestsConfig.CONTENT_TYPE_XML)
                 .pathParam("id", 10L)
-                .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                 .when()
-                .get("/find/{id}")
+                    .get("/find/{id}")
                 .then()
-                .statusCode(200)
+                    .statusCode(200)
                 .extract()
-                .body()
-                .asString();
+                    .body()
+                        .asString();
 
         TestWowCharacterDTO characterFound = objectMapper.readValue(content, TestWowCharacterDTO.class);
 
@@ -197,23 +192,46 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
+    public void testAsk() throws  IOException {
+        TestAskCharacterRequestDto request = new TestAskCharacterRequestDto("This is just a test");
+
+        var content = given()
+                .spec(specification)
+                .contentType(TestsConfig.CONTENT_TYPE_XML)
+                .accept(TestsConfig.CONTENT_TYPE_XML)
+                .pathParam("id", 1L)
+                    .body(objectMapper.writeValueAsString(request))
+                .when()
+                    .post("/ask/{id}")
+                .then()
+                    .statusCode(200)
+                .extract()
+                    .body()
+                        .asString();
+
+        String testAnswer = objectMapper.readValue(content, TestAskCharacterResponseDto.class).getAnswer();
+
+        assertNotNull(testAnswer);
+    }
+
+    @Test
+    @Order(5)
     public void testUpdate() throws IOException {
         updateMockedCharacterDto();
 
-        var content = given().spec(specification)
-                .basePath("/api/v1/character")
+        var content = given()
+                .spec(specification)
                 .contentType(TestsConfig.CONTENT_TYPE_XML)
                 .accept(TestsConfig.CONTENT_TYPE_XML)
                 .pathParam("id", 10L)
-                .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                 .body(objectMapper.writeValueAsString(characterDto))
                 .when()
-                .put("/update/{id}")
+                    .put("/update/{id}")
                 .then()
-                .statusCode(200)
+                    .statusCode(200)
                 .extract()
-                .body()
-                .asString();
+                    .body()
+                        .asString();
 
         TestWowCharacterDTO updatedCharacter = objectMapper.readValue(content, TestWowCharacterDTO.class);
 
@@ -236,19 +254,18 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testDelete() throws IOException {
         updateMockedCharacterDto();
 
-        var content = given().spec(specification)
-                .basePath("/api/v1/character")
+        var content = given()
+                .spec(specification)
                 .contentType(TestsConfig.CONTENT_TYPE_XML)
                 .pathParam("id", 10L)
-                .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                 .when()
-                .delete("/delete/{id}")
+                    .delete("/delete/{id}")
                 .then()
-                .statusCode(204);
+                    .statusCode(204);
     }
 
     private void mockCharacterDto() {

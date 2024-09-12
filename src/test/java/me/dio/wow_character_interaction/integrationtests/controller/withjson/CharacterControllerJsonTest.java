@@ -8,9 +8,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
-import me.dio.wow_character_interaction.integrationtests.dto.TestAccountCredentialsDto;
-import me.dio.wow_character_interaction.integrationtests.dto.TestTokenDto;
-import me.dio.wow_character_interaction.integrationtests.dto.TestWowCharacterDTO;
+import me.dio.wow_character_interaction.integrationtests.dto.*;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -56,6 +54,7 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
                             .basePath("/api/v1/auth")
                             .port(TestsConfig.SERVER_PORT)
                             .contentType(TestsConfig.CONTENT_TYPE_JSON)
+                            .accept(TestsConfig.CONTENT_TYPE_JSON)
                                 .body(user)
                             .when()
                                 .post("/signin")
@@ -67,11 +66,12 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
                                         .getAccessToken();
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
-                .setPort(TestsConfig.SERVER_PORT)
-                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
+                                .setBasePath("/api/v1/character")
+                                .setPort(TestsConfig.SERVER_PORT)
+                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                                .build();
     }
 
     @Test
@@ -79,10 +79,10 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
     public void testCreate() throws IOException {
         mockCharacterDto();
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .contentType(TestsConfig.CONTENT_TYPE_JSON)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
+                        .accept(TestsConfig.CONTENT_TYPE_JSON)
                             .body(characterDto)
                         .when()
                             .post("/create")
@@ -117,10 +117,10 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
     @Order(2)
     public void testFindAll() throws IOException {
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .contentType(TestsConfig.CONTENT_TYPE_JSON)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
+                        .accept(TestsConfig.CONTENT_TYPE_JSON)
                         .when()
                             .get("/find-all")
                         .then()
@@ -158,11 +158,11 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
     @Order(3)
     public void testFindById() throws IOException {
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .contentType(TestsConfig.CONTENT_TYPE_JSON)
+                        .accept(TestsConfig.CONTENT_TYPE_JSON)
                         .pathParam("id", 10L)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                         .when()
                             .get("/find/{id}")
                         .then()
@@ -193,14 +193,38 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
+    public void testAsk() throws  IOException {
+        TestAskCharacterRequestDto request = new TestAskCharacterRequestDto("This is just a test");
+
+        var content = given()
+                        .spec(specification)
+                        .contentType(TestsConfig.CONTENT_TYPE_JSON)
+                        .accept(TestsConfig.CONTENT_TYPE_JSON)
+                        .pathParam("id", 1L)
+                            .body(request)
+                        .when()
+                            .post("/ask/{id}")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
+
+        String testAnswer = objectMapper.readValue(content, TestAskCharacterResponseDto.class).getAnswer();
+
+        assertNotNull(testAnswer);
+    }
+
+    @Test
+    @Order(5)
     public void testUpdate() throws IOException {
         updateMockedCharacterDto();
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .contentType(TestsConfig.CONTENT_TYPE_JSON)
+                        .accept(TestsConfig.CONTENT_TYPE_JSON)
                         .pathParam("id", 10L)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                             .body(characterDto)
                         .when()
                             .put("/update/{id}")
@@ -231,15 +255,14 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testDelete() throws IOException {
         updateMockedCharacterDto();
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .contentType(TestsConfig.CONTENT_TYPE_JSON)
                         .pathParam("id", 10L)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                         .when()
                             .delete("/delete/{id}")
                         .then()

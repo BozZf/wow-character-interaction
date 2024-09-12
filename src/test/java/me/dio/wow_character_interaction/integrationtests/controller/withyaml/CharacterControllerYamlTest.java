@@ -14,9 +14,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
-import me.dio.wow_character_interaction.integrationtests.dto.TestAccountCredentialsDto;
-import me.dio.wow_character_interaction.integrationtests.dto.TestTokenDto;
-import me.dio.wow_character_interaction.integrationtests.dto.TestWowCharacterDTO;
+import me.dio.wow_character_interaction.integrationtests.dto.*;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -56,31 +54,32 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         TestAccountCredentialsDto user = new TestAccountCredentialsDto("TestAdmin", "TestAdmin123");
 
         var content = given()
-                .config(RestAssured
-                        .config()
-                        .encoderConfig(EncoderConfig.encoderConfig()
-                            .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
-                .basePath("/api/v1/auth")
-                    .port(TestsConfig.SERVER_PORT)
-                    .contentType(TestsConfig.CONTENT_TYPE_YML)
-                    .accept(TestsConfig.CONTENT_TYPE_YML)
-                .body(objectMapper.writeValueAsString(user))
-                    .when()
-                .post("/signin")
-                    .then()
-                        .statusCode(200)
-                            .extract()
-                                .body()
-                                    .asString();
+                        .config(RestAssured
+                                .config()
+                                    .encoderConfig(EncoderConfig.encoderConfig()
+                                        .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
+                        .basePath("/api/v1/auth")
+                        .port(TestsConfig.SERVER_PORT)
+                        .contentType(TestsConfig.CONTENT_TYPE_YML)
+                        .accept(TestsConfig.CONTENT_TYPE_YML)
+                            .body(objectMapper.writeValueAsString(user))
+                        .when()
+                            .post("/signin")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
 
         String accessToken = objectMapper.readValue(content, TestTokenDto.class).getAccessToken();
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
-                .setPort(TestsConfig.SERVER_PORT)
-                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
+                                .setBasePath("/api/v1/character")
+                                .setPort(TestsConfig.SERVER_PORT)
+                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                                .build();
     }
 
     @Test
@@ -88,15 +87,14 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
     public void testCreate() throws IOException {
         mockCharacterDto();
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .config(RestAssured
                             .config()
-                            .encoderConfig(EncoderConfig.encoderConfig()
+                                .encoderConfig(EncoderConfig.encoderConfig()
                                     .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                             .body(objectMapper.writeValueAsString(characterDto))
                         .when()
                             .post("/create")
@@ -131,15 +129,14 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
     @Order(2)
     public void testFindAll() throws IOException {
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .config(RestAssured
                                 .config()
-                                .encoderConfig(EncoderConfig.encoderConfig()
+                                    .encoderConfig(EncoderConfig.encoderConfig()
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                         .when()
                             .get("/find-all")
                         .then()
@@ -177,16 +174,15 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
     @Order(3)
     public void testFindById() throws IOException {
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .config(RestAssured
                                 .config()
-                                .encoderConfig(EncoderConfig.encoderConfig()
+                                    .encoderConfig(EncoderConfig.encoderConfig()
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
                         .pathParam("id", 10L)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                         .when()
                             .get("/find/{id}")
                         .then()
@@ -217,19 +213,46 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(4)
+    public void testAsk() throws  IOException {
+        TestAskCharacterRequestDto request = new TestAskCharacterRequestDto("This is just a test");
+
+        var content = given()
+                        .spec(specification)
+                        .config(RestAssured
+                            .config()
+                                .encoderConfig(EncoderConfig.encoderConfig()
+                                    .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
+                        .contentType(TestsConfig.CONTENT_TYPE_YML)
+                        .accept(TestsConfig.CONTENT_TYPE_YML)
+                        .pathParam("id", 1L)
+                            .body(objectMapper.writeValueAsString(request))
+                        .when()
+                            .post("/ask/{id}")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
+
+        String testAnswer = objectMapper.readValue(content, TestAskCharacterResponseDto.class).getAnswer();
+
+        assertNotNull(testAnswer);
+    }
+
+    @Test
+    @Order(5)
     public void testUpdate() throws IOException {
         updateMockedCharacterDto();
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .config(RestAssured
                                 .config()
-                                .encoderConfig(EncoderConfig.encoderConfig()
+                                    .encoderConfig(EncoderConfig.encoderConfig()
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
                         .pathParam("id", 10L)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                             .body(objectMapper.writeValueAsString(characterDto))
                         .when()
                             .put("/update/{id}")
@@ -260,19 +283,18 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testDelete() throws IOException {
         updateMockedCharacterDto();
 
-        var content = given().spec(specification)
-                        .basePath("/api/v1/character")
+        var content = given()
+                        .spec(specification)
                         .config(RestAssured
                                 .config()
-                                .encoderConfig(EncoderConfig.encoderConfig()
+                                    .encoderConfig(EncoderConfig.encoderConfig()
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .pathParam("id", 10L)
-                        .header(TestsConfig.HEADER_PARAM_ORIGIN, TestsConfig.ORIGIN_8888)
                         .when()
                             .delete("/delete/{id}")
                         .then()

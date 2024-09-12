@@ -7,6 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import me.dio.wow_character_interaction.application.AskCharacterUseCase;
+import me.dio.wow_character_interaction.data.dto.AskCharacterRequestDto;
+import me.dio.wow_character_interaction.data.dto.AskCharacterResponseDto;
 import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.service.WowCharacterService;
 import me.dio.wow_character_interaction.util.MediaType;
@@ -23,8 +26,11 @@ public class WowCharacterController {
 
     private final WowCharacterService wowCharacterService;
 
-    public WowCharacterController(WowCharacterService wowCharacterService) {
+    private final AskCharacterUseCase askCharacterUseCase;
+
+    public WowCharacterController(WowCharacterService wowCharacterService, AskCharacterUseCase askCharacterUseCase) {
         this.wowCharacterService = wowCharacterService;
+        this.askCharacterUseCase = askCharacterUseCase;
     }
 
     @GetMapping(value = "/find-all", produces = {
@@ -87,6 +93,43 @@ public class WowCharacterController {
             })
     public ResponseEntity<WowCharacterDto> getCharacterById(@PathVariable Long id) {
         return ResponseEntity.ok(wowCharacterService.findWowCharacterById(id));
+    }
+
+    @PostMapping(value = "/ask/{id}",
+            consumes = {
+                    MediaType.APPLICATION_JSON,
+                    MediaType.APPLICATION_XML,
+                    MediaType.APPLICATION_YAML},
+            produces = {
+                    MediaType.APPLICATION_JSON,
+                    MediaType.APPLICATION_XML,
+                    MediaType.APPLICATION_YAML})
+    @Operation(summary = "Chat with a character",
+            description = "Chat with a World Of Warcraft character.",
+            tags = {"WOW Characters Chat"},
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            schema = @Schema(type = "string")),
+                                    @Content(
+                                            mediaType = "application/xml",
+                                            schema = @Schema(type = "string")),
+                                    @Content(
+                                            mediaType = "application/x-yaml",
+                                            schema = @Schema(type = "string"))
+                            }),
+                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+            })
+    public AskCharacterResponseDto askCharacter(@PathVariable Long id, @RequestBody AskCharacterRequestDto request) {
+        String answer = askCharacterUseCase.askCharacter(id, request.getQuestion());
+        return new AskCharacterResponseDto(answer);
     }
 
     @PostMapping(value = "/create", consumes = {
@@ -174,4 +217,5 @@ public class WowCharacterController {
     public void deleteCharacter(@PathVariable Long id) {
         wowCharacterService.deleteWowCharacter(id);
     }
+
 }

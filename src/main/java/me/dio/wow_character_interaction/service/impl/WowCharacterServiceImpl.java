@@ -1,6 +1,5 @@
 package me.dio.wow_character_interaction.service.impl;
 
-import me.dio.wow_character_interaction.adapter.controller.AskWowCharacterController;
 import me.dio.wow_character_interaction.adapter.controller.WowCharacterController;
 import me.dio.wow_character_interaction.adapter.controller.exception.RequiredObjectIsNull;
 import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
@@ -92,7 +91,8 @@ public class WowCharacterServiceImpl implements WowCharacterService {
         dto.add(linkTo(methodOn(WowCharacterController.class)
                 .putCharacter(dto.getKey(), null))
                 .withRel("Update " + dto.getName() + " Information"));
-        dto.add(linkTo(AskWowCharacterController.class).withRel("Ask a Question to " + dto.getName()));
+        dto.add(linkTo(methodOn(WowCharacterController.class).askCharacter(null, null))
+                    .withRel("Ask a Question to " + dto.getName()).expand());
     }
 
     private void updateNotNullFields(WowCharacter entity, WowCharacterDto dto) {

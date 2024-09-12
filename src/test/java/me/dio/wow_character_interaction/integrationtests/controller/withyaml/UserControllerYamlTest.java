@@ -59,22 +59,22 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
         mockUser();
 
         var content = given()
-                .basePath("/api/v1/users")
-                .config(RestAssured
-                        .config()
-                        .encoderConfig(EncoderConfig.encoderConfig()
-                                .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
-                .port(TestsConfig.SERVER_PORT)
-                .contentType(TestsConfig.CONTENT_TYPE_YML)
-                .accept(TestsConfig.CONTENT_TYPE_YML)
-                    .body(objectMapper.writeValueAsString(userDto))
-                .when()
-                    .post("/create")
-                .then()
-                    .statusCode(200)
-                .extract()
-                    .body()
-                        .asString();
+                        .basePath("/api/v1/users")
+                        .config(RestAssured
+                                .config()
+                                .encoderConfig(EncoderConfig.encoderConfig()
+                                        .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
+                        .port(TestsConfig.SERVER_PORT)
+                        .contentType(TestsConfig.CONTENT_TYPE_YML)
+                        .accept(TestsConfig.CONTENT_TYPE_YML)
+                            .body(objectMapper.writeValueAsString(userDto))
+                        .when()
+                            .post("/create")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
 
         TestUserDto createdUser = objectMapper.readValue(content, TestUserDto.class);
 
@@ -95,31 +95,32 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
                                                 "TestPassword123");
 
         var content = given()
-                .config(RestAssured
-                        .config()
-                        .encoderConfig(EncoderConfig.encoderConfig()
-                                .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
-                .basePath("/api/v1/auth")
-                .port(TestsConfig.SERVER_PORT)
-                .contentType(TestsConfig.CONTENT_TYPE_YML)
-                .accept(TestsConfig.CONTENT_TYPE_YML)
-                    .body(objectMapper.writeValueAsString(credentialsDto))
-                .when()
-                    .post("/signin")
-                .then()
-                    .statusCode(200)
-                .extract()
-                    .body()
-                        .asString();
+                        .config(RestAssured
+                                .config()
+                                .encoderConfig(EncoderConfig.encoderConfig()
+                                        .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
+                        .basePath("/api/v1/auth")
+                        .port(TestsConfig.SERVER_PORT)
+                        .contentType(TestsConfig.CONTENT_TYPE_YML)
+                        .accept(TestsConfig.CONTENT_TYPE_YML)
+                            .body(objectMapper.writeValueAsString(credentialsDto))
+                        .when()
+                            .post("/signin")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
 
         String accessToken = objectMapper.readValue(content, TestTokenDto.class).getAccessToken();
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
-                .setPort(TestsConfig.SERVER_PORT)
-                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
+                            .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
+                            .setBasePath("/api/v1/users")
+                            .setPort(TestsConfig.SERVER_PORT)
+                                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
+                                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
+                            .build();
     }
 
     @Test
@@ -128,23 +129,22 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
         updateMockedUser();
 
         var content = given()
-                .spec(specification)
-                .basePath("/api/v1/users")
-                .config(RestAssured
-                        .config()
-                        .encoderConfig(EncoderConfig.encoderConfig()
-                                .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
-                .pathParam("username", "TestName")
-                .contentType(TestsConfig.CONTENT_TYPE_YML)
-                .accept(TestsConfig.CONTENT_TYPE_YML)
-                    .body(objectMapper.writeValueAsString(userDto))
-                .when()
-                    .put("/update/{username}")
-                .then()
-                    .statusCode(200)
-                .extract()
-                    .body()
-                        .asString();
+                        .spec(specification)
+                        .config(RestAssured
+                                .config()
+                                .encoderConfig(EncoderConfig.encoderConfig()
+                                        .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
+                        .pathParam("username", "TestName")
+                        .contentType(TestsConfig.CONTENT_TYPE_YML)
+                        .accept(TestsConfig.CONTENT_TYPE_YML)
+                            .body(objectMapper.writeValueAsString(userDto))
+                        .when()
+                            .put("/update/{username}")
+                        .then()
+                            .statusCode(200)
+                        .extract()
+                            .body()
+                                .asString();
 
         TestUserDto updatedUser = objectMapper.readValue(content, TestUserDto.class);
 
