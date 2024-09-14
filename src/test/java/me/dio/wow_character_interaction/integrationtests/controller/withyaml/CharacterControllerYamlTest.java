@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CharacterControllerYamlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
-    private static ObjectMapper objectMapper;
+    private static YAMLMapper objectMapper;
 
     private static TestWowCharacterDTO characterDto;
 
