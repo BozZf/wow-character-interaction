@@ -30,6 +30,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("xml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ContextConfiguration(
@@ -93,7 +94,8 @@ public class AuthControllerXmlTest extends AbstractIntegrationTest {
 
         List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
         assertTrue(roles.contains("ADMIN"));
-        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 18000000)));
+        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 17900000)));
+        assertTrue(decodedJWT.getExpiresAt().before(new Date(now.getTime() + 18100000)));
 
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         algorithm = Algorithm.HMAC256(secretKey.getBytes());
@@ -111,7 +113,8 @@ public class AuthControllerXmlTest extends AbstractIntegrationTest {
 
         roles = decodedJWT.getClaim("roles").asList(String.class);
         assertTrue(roles.contains("ADMIN"));
-        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + (18000000 * 3))));
+        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + (17900000 * 3))));
+        assertTrue(decodedJWT.getExpiresAt().before(new Date(now.getTime() + 18100000 * 3)));
 
         assertDoesNotThrow(() -> verifier.verify(testDto.getRefreshToken()));
 
@@ -159,7 +162,8 @@ public class AuthControllerXmlTest extends AbstractIntegrationTest {
 
         List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
         assertTrue(roles.contains("ADMIN"));
-        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 18000000)));
+        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 17900000)));
+        assertTrue(decodedJWT.getExpiresAt().before(new Date(now.getTime() + 18100000)));
 
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         algorithm = Algorithm.HMAC256(secretKey.getBytes());

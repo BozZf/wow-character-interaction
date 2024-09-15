@@ -24,6 +24,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("json")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ContextConfiguration(
@@ -105,12 +106,12 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
 
         assertTrue(createdCharacter.getId() > 0);
 
-        assertEquals("TestName", createdCharacter.getName());
-        assertEquals("TestGender", createdCharacter.getGender());
-        assertEquals("TestRace", createdCharacter.getRace());
-        assertEquals("TestClass", createdCharacter.getCharacterClass());
-        assertEquals("TestOccupation", createdCharacter.getOccupation());
-        assertEquals("TestLore", createdCharacter.getLore());
+        assertEquals("TestNameJson", createdCharacter.getName());
+        assertEquals("TestGenderJson", createdCharacter.getGender());
+        assertEquals("TestRaceJson", createdCharacter.getRace());
+        assertEquals("TestClassJson", createdCharacter.getCharacterClass());
+        assertEquals("TestOccupationJson", createdCharacter.getOccupation());
+        assertEquals("TestLoreJson", createdCharacter.getLore());
     }
 
     @Test
@@ -146,12 +147,12 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(characterTest.getLore());
 
         assertEquals(10L, characterTest.getId());
-        assertEquals("TestName", characterTest.getName());
-        assertEquals("TestGender", characterTest.getGender());
-        assertEquals("TestRace", characterTest.getRace());
-        assertEquals("TestClass", characterTest.getCharacterClass());
-        assertEquals("TestOccupation", characterTest.getOccupation());
-        assertEquals("TestLore", characterTest.getLore());
+        assertEquals("TestNameJson", characterTest.getName());
+        assertEquals("TestGenderJson", characterTest.getGender());
+        assertEquals("TestRaceJson", characterTest.getRace());
+        assertEquals("TestClassJson", characterTest.getCharacterClass());
+        assertEquals("TestOccupationJson", characterTest.getOccupation());
+        assertEquals("TestLoreJson", characterTest.getLore());
     }
 
     @Test
@@ -183,12 +184,12 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(characterFound.getLore());
 
         assertEquals(10L, characterFound.getId());
-        assertEquals("TestName", characterFound.getName());
-        assertEquals("TestGender", characterFound.getGender());
-        assertEquals("TestRace", characterFound.getRace());
-        assertEquals("TestClass", characterFound.getCharacterClass());
-        assertEquals("TestOccupation", characterFound.getOccupation());
-        assertEquals("TestLore", characterFound.getLore());
+        assertEquals("TestNameJson", characterFound.getName());
+        assertEquals("TestGenderJson", characterFound.getGender());
+        assertEquals("TestRaceJson", characterFound.getRace());
+        assertEquals("TestClassJson", characterFound.getCharacterClass());
+        assertEquals("TestOccupationJson", characterFound.getOccupation());
+        assertEquals("TestLoreJson", characterFound.getLore());
     }
 
     @Test
@@ -246,12 +247,12 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(updatedCharacter.getLore());
 
         assertEquals(10L, updatedCharacter.getId());
-        assertEquals("TestUpdatedName", updatedCharacter.getName());
-        assertEquals("TestUpdatedGender", updatedCharacter.getGender());
-        assertEquals("TestUpdatedRace", updatedCharacter.getRace());
-        assertEquals("TestUpdatedClass", updatedCharacter.getCharacterClass());
-        assertEquals("TestUpdatedOccupation", updatedCharacter.getOccupation());
-        assertEquals("TestUpdatedLore", updatedCharacter.getLore());
+        assertEquals("TestUpdatedNameJson", updatedCharacter.getName());
+        assertEquals("TestUpdatedGenderJson", updatedCharacter.getGender());
+        assertEquals("TestUpdatedRaceJson", updatedCharacter.getRace());
+        assertEquals("TestUpdatedClassJson", updatedCharacter.getCharacterClass());
+        assertEquals("TestUpdatedOccupationJson", updatedCharacter.getOccupation());
+        assertEquals("TestUpdatedLoreJson", updatedCharacter.getLore());
     }
 
     @Test
@@ -270,20 +271,20 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
     }
 
     private void mockCharacterDto() {
-        characterDto.setName("TestName");
-        characterDto.setGender("TestGender");
-        characterDto.setRace("TestRace");
-        characterDto.setCharacterClass("TestClass");
-        characterDto.setOccupation("TestOccupation");
-        characterDto.setLore("TestLore");
+        characterDto.setName("TestNameJson");
+        characterDto.setGender("TestGenderJson");
+        characterDto.setRace("TestRaceJson");
+        characterDto.setCharacterClass("TestClassJson");
+        characterDto.setOccupation("TestOccupationJson");
+        characterDto.setLore("TestLoreJson");
     }
 
     private void updateMockedCharacterDto() {
-        characterDto.setName("TestUpdatedName");
-        characterDto.setGender("TestUpdatedGender");
-        characterDto.setRace("TestUpdatedRace");
-        characterDto.setCharacterClass("TestUpdatedClass");
-        characterDto.setOccupation("TestUpdatedOccupation");
-        characterDto.setLore("TestUpdatedLore");
+        characterDto.setName("TestUpdatedNameJson");
+        characterDto.setGender("TestUpdatedGenderJson");
+        characterDto.setRace("TestUpdatedRaceJson");
+        characterDto.setCharacterClass("TestUpdatedClassJson");
+        characterDto.setOccupation("TestUpdatedOccupationJson");
+        characterDto.setLore("TestUpdatedLoreJson");
     }
 }

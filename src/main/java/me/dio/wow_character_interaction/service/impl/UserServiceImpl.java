@@ -54,23 +54,46 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDto updateUser(String username, UserDto dtoToUpdate) {
-        if (dtoToUpdate == null) {
+    public UserDto updateUserFullName(String username, String fullName) {
+        if (fullName == null) {
             throw new RequiredObjectIsNull();
         }
 
-        var entityToUpdate = userRepository.findByUsername(username);
-        if (entityToUpdate == null) {
+        if (!userRepository.existsByUsername(username)) {
             throw new NoSuchElementException("User with username " + username + " not found!");
         }
 
-        var entityParsed = DTOMapper.parseObject(dtoToUpdate, User.class);
-
-        updatePermittedFields(entityToUpdate, entityParsed);
-        var dtoParsed = DTOMapper.parseObject(userRepository.save(entityToUpdate), UserDto.class);
+        var dtoParsed = DTOMapper.parseObject(userRepository.updateFullName(username, fullName), UserDto.class);
         addLinks(dtoParsed);
 
         return dtoParsed;
+    }
+
+    @Override
+    public UserDto updateUserPassword(String username, String password) {
+        if (password == null) {
+            throw new RequiredObjectIsNull();
+        }
+
+        if (!userRepository.existsByUsername(username)) {
+            throw new NoSuchElementException("User with username " + username + " not found!");
+        }
+
+        String encodedPassword = passwordEncoding(password);
+
+        var dtoParsed = DTOMapper.parseObject(userRepository.updatePassword(username, encodedPassword),
+                UserDto.class);
+        addLinks(dtoParsed);
+
+        return dtoParsed;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException();
+        }
+        userRepository.deleteById(id);
     }
 
     @Override
@@ -83,13 +106,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    private void updatePermittedFields(User entity, User userToUpdate) {
-        if (userToUpdate.getFullName() != null) {
-            entity.setFullName(userToUpdate.getFullName());
-        }
-        if (userToUpdate.getPassword() != null) {
-            entity.setPassword(passwordEncoding(userToUpdate.getPassword()));
-        }
+    @Override
+    public void updateUserAccountNonExpired(Long id, Boolean state) {
+        userRepository.updateAccountNonExpired(id, state);
+    }
+
+    @Override
+    public void updateUserAccountNonLocked(Long id, Boolean state) {
+        userRepository.updateAccountNonLocked(id, state);
+    }
+
+    @Override
+    public void updateUserCredentialsNonExpired(Long id, Boolean state) {
+        userRepository.updateCredentialsNonExpired(id, state);
+    }
+
+    @Override
+    public void updateUserEnabled(Long id, Boolean state) {
+        userRepository.updateEnabled(id, state);
     }
 
     private String passwordEncoding(String password) {
@@ -97,8 +131,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private void addLinks(UserDto dto) {
-        dto.add(linkTo(methodOn(UserController.class).createUser(dto)).withRel("Create a new User"));
-        dto.add(linkTo(methodOn(UserController.class).updateUser(dto.getUsername(), dto)).withRel("Update a User"));
+        dto.add(linkTo(methodOn(UserController.class).createUser(null)).withRel("Create a new User"));
+        dto.add(linkTo(methodOn(UserController.class).patchUserFullName(null, null))
+                                                        .withRel("Update a User full name"));
+        dto.add(linkTo(methodOn(UserController.class).patchUserPassword(null, null))
+                .withRel("Update a User password"));
     }
 
     private void setBooleansToTrue(User entity) {

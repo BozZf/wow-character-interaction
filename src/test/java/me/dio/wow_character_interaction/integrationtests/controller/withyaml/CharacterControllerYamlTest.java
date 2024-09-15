@@ -3,7 +3,6 @@ package me.dio.wow_character_interaction.integrationtests.controller.withyaml;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -28,6 +27,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("yaml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ContextConfiguration(
@@ -117,12 +117,12 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
 
         assertTrue(createdCharacter.getId() > 0);
 
-        assertEquals("TestName", createdCharacter.getName());
-        assertEquals("TestGender", createdCharacter.getGender());
-        assertEquals("TestRace", createdCharacter.getRace());
-        assertEquals("TestClass", createdCharacter.getCharacterClass());
-        assertEquals("TestOccupation", createdCharacter.getOccupation());
-        assertEquals("TestLore", createdCharacter.getLore());
+        assertEquals("TestNameYaml", createdCharacter.getName());
+        assertEquals("TestGenderYaml", createdCharacter.getGender());
+        assertEquals("TestRaceYaml", createdCharacter.getRace());
+        assertEquals("TestClassYaml", createdCharacter.getCharacterClass());
+        assertEquals("TestOccupationYaml", createdCharacter.getOccupation());
+        assertEquals("TestLoreYaml", createdCharacter.getLore());
     }
 
     @Test
@@ -162,12 +162,12 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(characterTest.getLore());
 
         assertEquals(10L, characterTest.getId());
-        assertEquals("TestName", characterTest.getName());
-        assertEquals("TestGender", characterTest.getGender());
-        assertEquals("TestRace", characterTest.getRace());
-        assertEquals("TestClass", characterTest.getCharacterClass());
-        assertEquals("TestOccupation", characterTest.getOccupation());
-        assertEquals("TestLore", characterTest.getLore());
+        assertEquals("TestNameYaml", characterTest.getName());
+        assertEquals("TestGenderYaml", characterTest.getGender());
+        assertEquals("TestRaceYaml", characterTest.getRace());
+        assertEquals("TestClassYaml", characterTest.getCharacterClass());
+        assertEquals("TestOccupationYaml", characterTest.getOccupation());
+        assertEquals("TestLoreYaml", characterTest.getLore());
     }
 
     @Test
@@ -203,12 +203,12 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(characterFound.getLore());
 
         assertEquals(10L, characterFound.getId());
-        assertEquals("TestName", characterFound.getName());
-        assertEquals("TestGender", characterFound.getGender());
-        assertEquals("TestRace", characterFound.getRace());
-        assertEquals("TestClass", characterFound.getCharacterClass());
-        assertEquals("TestOccupation", characterFound.getOccupation());
-        assertEquals("TestLore", characterFound.getLore());
+        assertEquals("TestNameYaml", characterFound.getName());
+        assertEquals("TestGenderYaml", characterFound.getGender());
+        assertEquals("TestRaceYaml", characterFound.getRace());
+        assertEquals("TestClassYaml", characterFound.getCharacterClass());
+        assertEquals("TestOccupationYaml", characterFound.getOccupation());
+        assertEquals("TestLoreYaml", characterFound.getLore());
     }
 
     @Test
@@ -274,12 +274,12 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(updatedCharacter.getLore());
 
         assertEquals(10L, updatedCharacter.getId());
-        assertEquals("TestUpdatedName", updatedCharacter.getName());
-        assertEquals("TestUpdatedGender", updatedCharacter.getGender());
-        assertEquals("TestUpdatedRace", updatedCharacter.getRace());
-        assertEquals("TestUpdatedClass", updatedCharacter.getCharacterClass());
-        assertEquals("TestUpdatedOccupation", updatedCharacter.getOccupation());
-        assertEquals("TestUpdatedLore", updatedCharacter.getLore());
+        assertEquals("TestUpdatedNameYaml", updatedCharacter.getName());
+        assertEquals("TestUpdatedGenderYaml", updatedCharacter.getGender());
+        assertEquals("TestUpdatedRaceYaml", updatedCharacter.getRace());
+        assertEquals("TestUpdatedClassYaml", updatedCharacter.getCharacterClass());
+        assertEquals("TestUpdatedOccupationYaml", updatedCharacter.getOccupation());
+        assertEquals("TestUpdatedLoreYaml", updatedCharacter.getLore());
     }
 
     @Test
@@ -302,20 +302,20 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
     }
 
     private void mockCharacterDto() {
-        characterDto.setName("TestName");
-        characterDto.setGender("TestGender");
-        characterDto.setRace("TestRace");
-        characterDto.setCharacterClass("TestClass");
-        characterDto.setOccupation("TestOccupation");
-        characterDto.setLore("TestLore");
+        characterDto.setName("TestNameYaml");
+        characterDto.setGender("TestGenderYaml");
+        characterDto.setRace("TestRaceYaml");
+        characterDto.setCharacterClass("TestClassYaml");
+        characterDto.setOccupation("TestOccupationYaml");
+        characterDto.setLore("TestLoreYaml");
     }
 
     private void updateMockedCharacterDto() {
-        characterDto.setName("TestUpdatedName");
-        characterDto.setGender("TestUpdatedGender");
-        characterDto.setRace("TestUpdatedRace");
-        characterDto.setCharacterClass("TestUpdatedClass");
-        characterDto.setOccupation("TestUpdatedOccupation");
-        characterDto.setLore("TestUpdatedLore");
+        characterDto.setName("TestUpdatedNameYaml");
+        characterDto.setGender("TestUpdatedGenderYaml");
+        characterDto.setRace("TestUpdatedRaceYaml");
+        characterDto.setCharacterClass("TestUpdatedClassYaml");
+        characterDto.setOccupation("TestUpdatedOccupationYaml");
+        characterDto.setLore("TestUpdatedLoreYaml");
     }
 }

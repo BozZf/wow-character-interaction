@@ -20,6 +20,9 @@ import me.dio.wow_character_interaction.integrationtests.dto.TestAccountCredenti
 import me.dio.wow_character_interaction.integrationtests.dto.TestTokenDto;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactoryFriend;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,6 +36,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("yaml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ContextConfiguration(
@@ -100,7 +104,9 @@ public class AuthControllerYamlTest extends AbstractIntegrationTest {
 
         List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
         assertTrue(roles.contains("ADMIN"));
-        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 18000000)));
+
+        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 17900000)));
+        assertTrue(decodedJWT.getExpiresAt().before(new Date(now.getTime() + 18100000)));
 
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         algorithm = Algorithm.HMAC256(secretKey.getBytes());
@@ -118,7 +124,8 @@ public class AuthControllerYamlTest extends AbstractIntegrationTest {
 
         roles = decodedJWT.getClaim("roles").asList(String.class);
         assertTrue(roles.contains("ADMIN"));
-        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + (18000000 * 3))));
+        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + (17900000 * 3))));
+        assertTrue(decodedJWT.getExpiresAt().before(new Date(now.getTime() + 18100000 * 3)));
 
         assertDoesNotThrow(() -> verifier.verify(testDto.getRefreshToken()));
 
@@ -170,7 +177,8 @@ public class AuthControllerYamlTest extends AbstractIntegrationTest {
 
         List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
         assertTrue(roles.contains("ADMIN"));
-        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 18000000)));
+        assertTrue(decodedJWT.getExpiresAt().after(new Date(now.getTime() + 17900000)));
+        assertTrue(decodedJWT.getExpiresAt().before(new Date(now.getTime() + 18100000)));
 
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         algorithm = Algorithm.HMAC256(secretKey.getBytes());

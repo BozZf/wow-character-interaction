@@ -24,6 +24,7 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("xml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ContextConfiguration(
@@ -105,12 +106,12 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
 
         assertTrue(createdCharacter.getId() > 0);
 
-        assertEquals("TestName", createdCharacter.getName());
-        assertEquals("TestGender", createdCharacter.getGender());
-        assertEquals("TestRace", createdCharacter.getRace());
-        assertEquals("TestClass", createdCharacter.getCharacterClass());
-        assertEquals("TestOccupation", createdCharacter.getOccupation());
-        assertEquals("TestLore", createdCharacter.getLore());
+        assertEquals("TestNameXml", createdCharacter.getName());
+        assertEquals("TestGenderXml", createdCharacter.getGender());
+        assertEquals("TestRaceXml", createdCharacter.getRace());
+        assertEquals("TestClassXml", createdCharacter.getCharacterClass());
+        assertEquals("TestOccupationXml", createdCharacter.getOccupation());
+        assertEquals("TestLoreXml", createdCharacter.getLore());
     }
 
     @Test
@@ -146,12 +147,12 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         assertNotNull(characterTest.getLore());
 
         assertEquals(10L, characterTest.getId());
-        assertEquals("TestName", characterTest.getName());
-        assertEquals("TestGender", characterTest.getGender());
-        assertEquals("TestRace", characterTest.getRace());
-        assertEquals("TestClass", characterTest.getCharacterClass());
-        assertEquals("TestOccupation", characterTest.getOccupation());
-        assertEquals("TestLore", characterTest.getLore());
+        assertEquals("TestNameXml", characterTest.getName());
+        assertEquals("TestGenderXml", characterTest.getGender());
+        assertEquals("TestRaceXml", characterTest.getRace());
+        assertEquals("TestClassXml", characterTest.getCharacterClass());
+        assertEquals("TestOccupationXml", characterTest.getOccupation());
+        assertEquals("TestLoreXml", characterTest.getLore());
     }
 
     @Test
@@ -182,12 +183,12 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         assertNotNull(characterFound.getLore());
 
         assertEquals(10L, characterFound.getId());
-        assertEquals("TestName", characterFound.getName());
-        assertEquals("TestGender", characterFound.getGender());
-        assertEquals("TestRace", characterFound.getRace());
-        assertEquals("TestClass", characterFound.getCharacterClass());
-        assertEquals("TestOccupation", characterFound.getOccupation());
-        assertEquals("TestLore", characterFound.getLore());
+        assertEquals("TestNameXml", characterFound.getName());
+        assertEquals("TestGenderXml", characterFound.getGender());
+        assertEquals("TestRaceXml", characterFound.getRace());
+        assertEquals("TestClassXml", characterFound.getCharacterClass());
+        assertEquals("TestOccupationXml", characterFound.getOccupation());
+        assertEquals("TestLoreXml", characterFound.getLore());
     }
 
     @Test
@@ -245,12 +246,12 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         assertNotNull(updatedCharacter.getLore());
 
         assertEquals(10L, updatedCharacter.getId());
-        assertEquals("TestUpdatedName", updatedCharacter.getName());
-        assertEquals("TestUpdatedGender", updatedCharacter.getGender());
-        assertEquals("TestUpdatedRace", updatedCharacter.getRace());
-        assertEquals("TestUpdatedClass", updatedCharacter.getCharacterClass());
-        assertEquals("TestUpdatedOccupation", updatedCharacter.getOccupation());
-        assertEquals("TestUpdatedLore", updatedCharacter.getLore());
+        assertEquals("TestUpdatedNameXml", updatedCharacter.getName());
+        assertEquals("TestUpdatedGenderXml", updatedCharacter.getGender());
+        assertEquals("TestUpdatedRaceXml", updatedCharacter.getRace());
+        assertEquals("TestUpdatedClassXml", updatedCharacter.getCharacterClass());
+        assertEquals("TestUpdatedOccupationXml", updatedCharacter.getOccupation());
+        assertEquals("TestUpdatedLoreXml", updatedCharacter.getLore());
     }
 
     @Test
@@ -269,20 +270,20 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
     }
 
     private void mockCharacterDto() {
-        characterDto.setName("TestName");
-        characterDto.setGender("TestGender");
-        characterDto.setRace("TestRace");
-        characterDto.setCharacterClass("TestClass");
-        characterDto.setOccupation("TestOccupation");
-        characterDto.setLore("TestLore");
+        characterDto.setName("TestNameXml");
+        characterDto.setGender("TestGenderXml");
+        characterDto.setRace("TestRaceXml");
+        characterDto.setCharacterClass("TestClassXml");
+        characterDto.setOccupation("TestOccupationXml");
+        characterDto.setLore("TestLoreXml");
     }
 
     private void updateMockedCharacterDto() {
-        characterDto.setName("TestUpdatedName");
-        characterDto.setGender("TestUpdatedGender");
-        characterDto.setRace("TestUpdatedRace");
-        characterDto.setCharacterClass("TestUpdatedClass");
-        characterDto.setOccupation("TestUpdatedOccupation");
-        characterDto.setLore("TestUpdatedLore");
+        characterDto.setName("TestUpdatedNameXml");
+        characterDto.setGender("TestUpdatedGenderXml");
+        characterDto.setRace("TestUpdatedRaceXml");
+        characterDto.setCharacterClass("TestUpdatedClassXml");
+        characterDto.setOccupation("TestUpdatedOccupationXml");
+        characterDto.setLore("TestUpdatedLoreXml");
     }
 }

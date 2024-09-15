@@ -7,5 +7,17 @@ public interface UserService {
 
     UserDto createUser(UserDto dtoToCreate);
 
-    UserDto updateUser(String username, UserDto dtoToUpdate);
+    UserDto updateUserFullName(String username, String fullName);
+
+    UserDto updateUserPassword(String username, String password);
+
+    void deleteUser(Long id);
+
+    void updateUserAccountNonExpired(Long id, Boolean state);
+
+    void updateUserAccountNonLocked(Long id, Boolean state);
+
+    void updateUserCredentialsNonExpired(Long id, Boolean state);
+
+    void updateUserEnabled(Long id, Boolean state);
 }
