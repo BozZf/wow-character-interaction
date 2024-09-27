@@ -14,26 +14,26 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByUsername(String username);
 
     @Modifying
-    @Query("UPDATE User u u.fullname = :fullname WHERE u.username = :username")
-    User updateFullName(@Param("username") String username, @Param("fullname") String fullName);
+    @Query("UPDATE User u SET u.fullName = :full_name WHERE u.username = :username")
+    void updateFullName(@Param("username") String username, @Param("full_name") String fullName);
 
     @Modifying
-    @Query("UPDATE User u u.password = :password WHERE u.username = :username")
-    User updatePassword(@Param("username") String username, @Param("password") String password);
+    @Query("UPDATE User u SET u.password = :password WHERE u.username = :username")
+    void updatePassword(@Param("username") String username, @Param("password") String password);
 
     @Modifying
-    @Query("UPDATE User u u.accountNonExpired = :state WHERE u.id = :id")
+    @Query("UPDATE User u SET u.accountNonExpired = :state WHERE u.id = :id")
     void updateAccountNonExpired(@Param("id") Long id, @Param("state") Boolean state);
 
     @Modifying
-    @Query("UPDATE User u u.accountNonLocked = :state WHERE u.id = :id")
+    @Query("UPDATE User u SET u.accountNonLocked = :state WHERE u.id = :id")
     void updateAccountNonLocked(@Param("id") Long id, @Param("state") Boolean state);
 
     @Modifying
-    @Query("UPDATE User u u.credentialsNonExpired = :state WHERE u.id = :id")
+    @Query("UPDATE User u SET u.credentialsNonExpired = :state WHERE u.id = :id")
     void updateCredentialsNonExpired(@Param("id") Long id, @Param("state") Boolean state);
 
     @Modifying
-    @Query("UPDATE User u u.enabled = :state WHERE u.id = :id")
+    @Query("UPDATE User u SET u.enabled = :state WHERE u.id = :id")
     void updateEnabled(@Param("id") Long id, @Param("state") Boolean state);
 }

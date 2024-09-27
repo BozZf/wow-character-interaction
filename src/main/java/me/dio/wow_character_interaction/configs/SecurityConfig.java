@@ -51,13 +51,15 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/api/v1/character/find-all",
                                         "/api/v1/character/find/{id}",
-                                        "/api/v1/users/update/**",
+                                        "/api/v1/users/update/{username}/**",
                                         "/api/v1/character/ask/{id}"
                                 ).authenticated()
                                 .requestMatchers(
                                         "/api/v1/character/create",
                                         "/api/v1/character/update/{id}",
-                                        "/api/v1/character/delete/{id}"
+                                        "/api/v1/character/delete/{id}",
+                                        "/api/v1/users/update/{id}/**",
+                                        "/api/v1/users/delete/{id}"
                                 ).hasAnyAuthority("ADMIN", "MANAGER")
                 )
                 .build();

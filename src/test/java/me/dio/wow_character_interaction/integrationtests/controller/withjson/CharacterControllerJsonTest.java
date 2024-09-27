@@ -48,10 +48,10 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
 
     @Test
     @Order(0)
-    public void authorization() throws JsonMappingException, JsonProcessingException {
+    public void authorization() throws IOException {
         TestAccountCredentialsDto user = new TestAccountCredentialsDto("TestAdmin", "TestAdmin123");
 
-        var accessToken = given()
+        var content = given()
                             .basePath("/api/v1/auth")
                             .port(TestsConfig.SERVER_PORT)
                             .contentType(TestsConfig.CONTENT_TYPE_JSON)
@@ -63,11 +63,12 @@ public class CharacterControllerJsonTest extends AbstractIntegrationTest {
                                 .statusCode(200)
                             .extract()
                                 .body()
-                                    .as(TestTokenDto.class)
-                                        .getAccessToken();
+                                    .asString();
+
+        String token = objectMapper.readValue(content, TestTokenDto.class).getAccessToken();
 
         specification = new RequestSpecBuilder()
-                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
+                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + token)
                                 .setBasePath("/api/v1/character")
                                 .setPort(TestsConfig.SERVER_PORT)
                                     .addFilter(new RequestLoggingFilter(LogDetail.ALL))

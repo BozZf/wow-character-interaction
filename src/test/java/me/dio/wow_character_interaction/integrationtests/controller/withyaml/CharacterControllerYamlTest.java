@@ -71,10 +71,10 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
                             .body()
                                 .asString();
 
-        String accessToken = objectMapper.readValue(content, TestTokenDto.class).getAccessToken();
+        String token = objectMapper.readValue(content, TestTokenDto.class).getAccessToken();
 
         specification = new RequestSpecBuilder()
-                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken )
+                                .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + token)
                                 .setBasePath("/api/v1/character")
                                 .setPort(TestsConfig.SERVER_PORT)
                                     .addFilter(new RequestLoggingFilter(LogDetail.ALL))

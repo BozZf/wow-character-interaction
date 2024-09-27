@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
-@Tag(name = "User Endpoints", description = "Endpoints for create or update a User")
+@Tag(name = "User Endpoints", description = "Endpoints manage users")
 public class UserController {
 
     @Autowired
@@ -136,102 +136,5 @@ public class UserController {
                                                      @RequestBody String password) {
         String decryptedUsername = usernameEnc.decrypt(encryptedUsername);
         return ResponseEntity.ok(userService.updateUserPassword(decryptedUsername, password));
-    }
-
-    @DeleteMapping(value = "/delete/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Delete a User",
-            description = "Delete a User from data base passing his ID.",
-            tags = {"User Endpoints"},
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
-            })
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-    }
-
-    @PatchMapping(value = "/update/{id}/account-non-expired",
-            consumes = {
-                    MediaType.APPLICATION_JSON,
-                    MediaType.APPLICATION_XML,
-                    MediaType.APPLICATION_YAML})
-    @Operation(summary = "Update User accountNonExpired",
-            description = "Update User accountNonExpired state in a JSON, XML or YAML format.",
-            tags = {"User Endpoints"},
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(description = "Success", responseCode = "200", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
-            })
-    public void patchUserAccountNonExpired(@PathVariable("id") Long id, @RequestBody Boolean state) {
-        userService.updateUserAccountNonExpired(id, state);
-    }
-
-    @PatchMapping(value = "/update/{id}/account-non-locked",
-            consumes = {
-                    MediaType.APPLICATION_JSON,
-                    MediaType.APPLICATION_XML,
-                    MediaType.APPLICATION_YAML})
-    @Operation(summary = "Update User accountNonLocked",
-            description = "Update User accountNonLocked state in a JSON, XML or YAML format.",
-            tags = {"User Endpoints"},
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(description = "Success", responseCode = "200", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
-            })
-    public void patchUserAccountNonLocked(@PathVariable("id") Long id, @RequestBody Boolean state) {
-        userService.updateUserAccountNonLocked(id, state);
-    }
-
-    @PatchMapping(value = "/update/{id}/credentials-non-expired",
-            consumes = {
-                    MediaType.APPLICATION_JSON,
-                    MediaType.APPLICATION_XML,
-                    MediaType.APPLICATION_YAML})
-    @Operation(summary = "Update User credentialsNonExpired",
-            description = "Update User credentialsNonExpired state in a JSON, XML or YAML format.",
-            tags = {"User Endpoints"},
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(description = "Success", responseCode = "200", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
-            })
-    public void patchUserCredentialsNonExpired(@PathVariable("id") Long id, @RequestBody Boolean state) {
-        userService.updateUserCredentialsNonExpired(id, state);
-    }
-
-    @PatchMapping(value = "/update/{id}/enabled",
-            consumes = {
-                    MediaType.APPLICATION_JSON,
-                    MediaType.APPLICATION_XML,
-                    MediaType.APPLICATION_YAML})
-    @Operation(summary = "Update User enabled",
-            description = "Update User enabled state in a JSON, XML or YAML format.",
-            tags = {"User Endpoints"},
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(description = "Success", responseCode = "200", content = @Content),
-                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
-                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
-            })
-    public void patchUserEnabled(@PathVariable("id") Long id, @RequestBody Boolean state) {
-        userService.updateUserEnabled(id, state);
     }
 }

@@ -1,6 +1,5 @@
 package me.dio.wow_character_interaction.service.impl;
 
-import me.dio.wow_character_interaction.adapter.controller.UserController;
 import me.dio.wow_character_interaction.adapter.controller.exception.RequiredObjectIsNull;
 import me.dio.wow_character_interaction.adapter.repository.UserRepository;
 import me.dio.wow_character_interaction.data.dto.UserDto;
@@ -8,16 +7,24 @@ import me.dio.wow_character_interaction.domain.model.User;
 import me.dio.wow_character_interaction.mapper.DTOMapper;
 import me.dio.wow_character_interaction.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -48,11 +55,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         setBooleansToTrue(entity);
 
         var dto = DTOMapper.parseObject(userRepository.save(entity), UserDto.class);
-
         addLinks(dto);
+
         return dto;
     }
 
+    @Transactional
     @Override
     public UserDto updateUserFullName(String username, String fullName) {
         if (fullName == null) {
@@ -63,12 +71,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new NoSuchElementException("User with username " + username + " not found!");
         }
 
-        var dtoParsed = DTOMapper.parseObject(userRepository.updateFullName(username, fullName), UserDto.class);
+        userRepository.updateFullName(username, fullName);
+        var dtoParsed = DTOMapper.parseObject(userRepository.findByUsername(username), UserDto.class);
         addLinks(dtoParsed);
 
         return dtoParsed;
     }
 
+    @Transactional
     @Override
     public UserDto updateUserPassword(String username, String password) {
         if (password == null) {
@@ -80,20 +90,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         String encodedPassword = passwordEncoding(password);
+        userRepository.updatePassword(username, encodedPassword);
 
-        var dtoParsed = DTOMapper.parseObject(userRepository.updatePassword(username, encodedPassword),
-                UserDto.class);
+        var dtoParsed = DTOMapper.parseObject(userRepository.findByUsername(username), UserDto.class);
         addLinks(dtoParsed);
 
         return dtoParsed;
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new NoSuchElementException();
-        }
-        userRepository.deleteById(id);
     }
 
     @Override
@@ -106,36 +108,36 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    public void updateUserAccountNonExpired(Long id, Boolean state) {
-        userRepository.updateAccountNonExpired(id, state);
-    }
-
-    @Override
-    public void updateUserAccountNonLocked(Long id, Boolean state) {
-        userRepository.updateAccountNonLocked(id, state);
-    }
-
-    @Override
-    public void updateUserCredentialsNonExpired(Long id, Boolean state) {
-        userRepository.updateCredentialsNonExpired(id, state);
-    }
-
-    @Override
-    public void updateUserEnabled(Long id, Boolean state) {
-        userRepository.updateEnabled(id, state);
-    }
-
     private String passwordEncoding(String password) {
         return passwordEncoder.encode(password);
     }
 
     private void addLinks(UserDto dto) {
-        dto.add(linkTo(methodOn(UserController.class).createUser(null)).withRel("Create a new User"));
-        dto.add(linkTo(methodOn(UserController.class).patchUserFullName(null, null))
-                                                        .withRel("Update a User full name"));
-        dto.add(linkTo(methodOn(UserController.class).patchUserPassword(null, null))
-                .withRel("Update a User password"));
+
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .build()
+                .toUriString() + "/api/v1/users";
+
+        URI createUserUri = UriComponentsBuilder
+                .fromUriString(baseUrl + "/create")
+                .build()
+                .toUri();
+        Link createUserLink = Link.of(createUserUri.toString(), "Create a new User");
+        dto.add(createUserLink);
+
+        URI updateFullNameUri = UriComponentsBuilder
+                .fromUriString(baseUrl + "/update/:username/full-name")
+                .buildAndExpand()
+                .toUri();
+        Link updateFullNameLink = Link.of(updateFullNameUri.toString(), "Update a User full name");
+        dto.add(updateFullNameLink);
+
+        URI updatePasswordUri = UriComponentsBuilder
+                .fromUriString(baseUrl + "/update/:username/password")
+                .buildAndExpand()
+                .toUri();
+        Link updatePasswordLink = Link.of(updatePasswordUri.toString(), "Update a User password");
+        dto.add(updatePasswordLink);
     }
 
     private void setBooleansToTrue(User entity) {

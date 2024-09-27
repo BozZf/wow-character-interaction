@@ -15,7 +15,7 @@ public class FilterConfig {
         registrationBean.setFilter(new PathVariableEncryptionFilter());
         registrationBean.addUrlPatterns(
                 "/api/v1/auth/refresh/**",
-                "/api/v1/users/update/**");
+                "/api/v1/users/update/{username}/**");
 
         return registrationBean;
     }

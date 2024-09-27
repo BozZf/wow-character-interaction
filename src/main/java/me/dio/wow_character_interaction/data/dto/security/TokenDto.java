@@ -1,9 +1,12 @@
 package me.dio.wow_character_interaction.data.dto.security;
 
+import me.dio.wow_character_interaction.data.dto.UserDto;
+import org.springframework.hateoas.RepresentationModel;
+
 import java.util.Date;
 import java.util.Objects;
 
-public class TokenDto {
+public class TokenDto extends RepresentationModel<TokenDto> {
 
     private String username;
     private Boolean authenticated;

@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
         ResponseError error = new ResponseError(
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Sorry, an unexpected error occurred");
+                "Sorry, an error occurred");
         error.setTimestamp(new Date());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
