@@ -11,15 +11,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.username = :username")
     User findByUsername(@Param("username") String username);
 
-    Boolean existsByUsername(String username);
+    boolean existsByUsername(String username);
 
     @Modifying
     @Query("UPDATE User u SET u.fullName = :full_name WHERE u.username = :username")
-    void updateFullName(@Param("username") String username, @Param("full_name") String fullName);
+    int updateFullName(@Param("username") String username, @Param("full_name") String fullName);
 
     @Modifying
     @Query("UPDATE User u SET u.password = :password WHERE u.username = :username")
-    void updatePassword(@Param("username") String username, @Param("password") String password);
+    int updatePassword(@Param("username") String username, @Param("password") String password);
 
     @Modifying
     @Query("UPDATE User u SET u.accountNonExpired = :state WHERE u.id = :id")

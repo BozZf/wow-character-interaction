@@ -7,9 +7,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.EncoderConfig;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
@@ -17,8 +14,6 @@ import me.dio.wow_character_interaction.integrationtests.dto.*;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,16 +25,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("yaml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class CharacterControllerYamlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static YAMLMapper objectMapper;
 
     private static TestWowCharacterDTO characterDto;
+    private static Long createdCharacterId;
 
     @BeforeAll
     public static void setup() {
@@ -77,8 +69,6 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
                                 .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + token)
                                 .setBasePath("/api/v1/character")
                                 .setPort(TestsConfig.SERVER_PORT)
-                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                                 .build();
     }
 
@@ -115,7 +105,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(createdCharacter.getOccupation());
         assertNotNull(createdCharacter.getLore());
 
-        assertTrue(createdCharacter.getId() > 0);
+        createdCharacterId = createdCharacter.getId();
 
         assertEquals("TestNameYaml", createdCharacter.getName());
         assertEquals("TestGenderYaml", createdCharacter.getGender());
@@ -148,9 +138,10 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         List<TestWowCharacterDTO> characters = Arrays.asList(objectMapper
                 .readValue(content, TestWowCharacterDTO[].class));
 
-        assertEquals(10, characters.size());
-
-        TestWowCharacterDTO characterTest = characters.get(9);
+        TestWowCharacterDTO characterTest = characters.stream()
+                .filter(character -> createdCharacterId.equals(character.getId()))
+                .findFirst()
+                .orElseThrow();
 
         assertNotNull(characterTest);
         assertNotNull(characterTest.getId());
@@ -161,7 +152,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(characterTest.getOccupation());
         assertNotNull(characterTest.getLore());
 
-        assertEquals(10L, characterTest.getId());
+        assertEquals(createdCharacterId, characterTest.getId());
         assertEquals("TestNameYaml", characterTest.getName());
         assertEquals("TestGenderYaml", characterTest.getGender());
         assertEquals("TestRaceYaml", characterTest.getRace());
@@ -182,7 +173,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
-                        .pathParam("id", 10L)
+                        .pathParam("id", createdCharacterId)
                         .when()
                             .get("/find/{id}")
                         .then()
@@ -202,7 +193,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(characterFound.getOccupation());
         assertNotNull(characterFound.getLore());
 
-        assertEquals(10L, characterFound.getId());
+        assertEquals(createdCharacterId, characterFound.getId());
         assertEquals("TestNameYaml", characterFound.getName());
         assertEquals("TestGenderYaml", characterFound.getGender());
         assertEquals("TestRaceYaml", characterFound.getRace());
@@ -236,7 +227,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
 
         String testAnswer = objectMapper.readValue(content, TestAskCharacterResponseDto.class).getAnswer();
 
-        assertNotNull(testAnswer);
+        assertEquals(GEMINI_ANSWER, testAnswer);
     }
 
     @Test
@@ -252,7 +243,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
-                        .pathParam("id", 10L)
+                        .pathParam("id", createdCharacterId)
                             .body(objectMapper.writeValueAsString(characterDto))
                         .when()
                             .put("/update/{id}")
@@ -273,7 +264,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(updatedCharacter.getOccupation());
         assertNotNull(updatedCharacter.getLore());
 
-        assertEquals(10L, updatedCharacter.getId());
+        assertEquals(createdCharacterId, updatedCharacter.getId());
         assertEquals("TestUpdatedNameYaml", updatedCharacter.getName());
         assertEquals("TestUpdatedGenderYaml", updatedCharacter.getGender());
         assertEquals("TestUpdatedRaceYaml", updatedCharacter.getRace());
@@ -294,7 +285,7 @@ public class CharacterControllerYamlTest extends AbstractIntegrationTest {
                                     .encoderConfig(EncoderConfig.encoderConfig()
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
-                        .pathParam("id", 10L)
+                        .pathParam("id", createdCharacterId)
                         .when()
                             .delete("/delete/{id}")
                         .then()

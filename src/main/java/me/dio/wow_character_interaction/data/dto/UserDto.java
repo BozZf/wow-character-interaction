@@ -17,6 +17,7 @@ public class UserDto extends RepresentationModel<UserDto> {
     @JsonProperty("full_name")
     private String fullName;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     public String getUsername() {

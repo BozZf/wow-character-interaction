@@ -3,9 +3,6 @@ package me.dio.wow_character_interaction.integrationtests.controller.withjson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
 import me.dio.wow_character_interaction.data.dto.security.TokenDto;
@@ -14,15 +11,15 @@ import me.dio.wow_character_interaction.integrationtests.dto.TestTokenDto;
 import me.dio.wow_character_interaction.integrationtests.dto.TestUserDto;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
+import me.dio.wow_character_interaction.adapter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,19 +27,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("json")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class UserControllerJsonTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static ObjectMapper objectMapper;
 
+    private static final String USERNAME = "test-" + UUID.randomUUID();
+
     private static TestUserDto userDto;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeAll
     public static void setup() {
@@ -75,17 +73,17 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(createdUser);
         assertNotNull(createdUser.getUsername());
         assertNotNull(createdUser.getFullName());
-        assertNotNull(createdUser.getPassword());
+        assertNull(createdUser.getPassword());
 
-        assertEquals("TestName", createdUser.getUsername());
+        assertEquals(USERNAME, createdUser.getUsername());
         assertEquals("Test Full Name", createdUser.getFullName());
-        assertTrue(passwordEncoder.matches("TestPassword123", createdUser.getPassword()));
+        assertTrue(passwordEncoder.matches("TestPassword123", userRepository.findByUsername(USERNAME).getPassword()));
     }
 
     @Test
     @Order(1)
     public void authorization() throws IOException {
-        TestAccountCredentialsDto credentialsDto = new TestAccountCredentialsDto("TestName",
+        TestAccountCredentialsDto credentialsDto = new TestAccountCredentialsDto(USERNAME,
                                                 "TestPassword123");
 
         var content = given()
@@ -107,8 +105,6 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
                                 .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + token)
                                 .setBasePath("/api/v1/users")
                                 .setPort(TestsConfig.SERVER_PORT)
-                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                                 .build();
     }
 
@@ -118,7 +114,7 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
 
         var content = given()
                         .spec(specification)
-                        .pathParam("username", "TestName")
+                        .pathParam("username", USERNAME)
                         .contentType(TestsConfig.CONTENT_TYPE_JSON)
                             .body("Test Updated Full Name")
                         .when()
@@ -134,9 +130,9 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(updatedUser);
         assertNotNull(updatedUser.getUsername());
         assertNotNull(updatedUser.getFullName());
-        assertNotNull(updatedUser.getPassword());
+        assertNull(updatedUser.getPassword());
 
-        assertEquals("TestName", updatedUser.getUsername());
+        assertEquals(USERNAME, updatedUser.getUsername());
         assertEquals("Test Updated Full Name", updatedUser.getFullName());
     }
 
@@ -146,7 +142,7 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
 
         var content = given()
                         .spec(specification)
-                        .pathParam("username", "TestName")
+                        .pathParam("username", USERNAME)
                         .contentType(TestsConfig.CONTENT_TYPE_JSON)
                             .body("TestUpdatedPassword123")
                         .when()
@@ -162,14 +158,31 @@ public class UserControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(updatedUser);
         assertNotNull(updatedUser.getUsername());
         assertNotNull(updatedUser.getFullName());
-        assertNotNull(updatedUser.getPassword());
+        assertNull(updatedUser.getPassword());
 
-        assertEquals("TestName", updatedUser.getUsername());
-        assertTrue(passwordEncoder.matches("TestUpdatedPassword123", updatedUser.getPassword()));
+        assertEquals(USERNAME, updatedUser.getUsername());
+        assertTrue(passwordEncoder.matches("TestUpdatedPassword123", userRepository.findByUsername(USERNAME).getPassword()));
+    }
+
+    @Test
+    @Order(4)
+    void rejectsChangesToAnotherAccount() {
+        given().spec(specification).contentType(TestsConfig.CONTENT_TYPE_JSON)
+                .body("Unauthorized change")
+                .when().patch("/update/TestAdmin/full-name")
+                .then().statusCode(403);
+
+        given().spec(specification).contentType(TestsConfig.CONTENT_TYPE_JSON)
+                .body("Unauthorized change")
+                .when().patch("/update/TestAdmin/password")
+                .then().statusCode(403);
+
+        assertEquals("TestAdminFullName", userRepository.findByUsername("TestAdmin").getFullName());
+        assertTrue(passwordEncoder.matches("TestAdmin123", userRepository.findByUsername("TestAdmin").getPassword()));
     }
 
     public void mockUser() {
-        userDto.setUsername("TestName");
+        userDto.setUsername(USERNAME);
         userDto.setFullName("Test Full Name");
         userDto.setPassword("TestPassword123");
     }

@@ -12,7 +12,7 @@
 	<artifactId>wow-character-interaction</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>wow-character-interaction</name>
-	<description>Simple project to interact with a WOW character by GPT API</description>
+	<description>Simple project to interact with a World of Warcraft character using the Gemini API</description>
 	<url/>
 	<licenses>
 		<license/>

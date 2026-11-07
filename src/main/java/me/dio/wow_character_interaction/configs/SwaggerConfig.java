@@ -1,8 +1,10 @@
 package me.dio.wow_character_interaction.configs;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +14,9 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customSwagger() {
         return new OpenAPI()
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth", bearerScheme("Access token returned by sign-in"))
+                        .addSecuritySchemes("refreshBearerAuth", bearerScheme("Refresh token returned by sign-in")))
                 .info(new Info()
                         .title("WOW Characters Chat")
                         .version("V1")
@@ -20,5 +25,9 @@ public class SwaggerConfig {
                                 .name("Felipe Bozzoni")
                                 .url("https://www.linkedin.com/in/felipe-bozzoni/")
                                 .email("fe.bozzoni@gmail.com")));
+    }
+    private SecurityScheme bearerScheme(String description) {
+        return new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+                .description(description);
     }
 }

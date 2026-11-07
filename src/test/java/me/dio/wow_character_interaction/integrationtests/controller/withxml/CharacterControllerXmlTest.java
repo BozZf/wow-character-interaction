@@ -5,17 +5,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
 import me.dio.wow_character_interaction.integrationtests.dto.*;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,16 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("xml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class CharacterControllerXmlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static XmlMapper objectMapper;
 
     private static TestWowCharacterDTO characterDto;
+    private static Long createdCharacterId;
 
     @BeforeAll
     public static void setup() {
@@ -70,8 +62,6 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
                                 .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + token)
                                 .setBasePath("/api/v1/character")
                                 .setPort(TestsConfig.SERVER_PORT)
-                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                                 .build();
     }
 
@@ -105,7 +95,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         assertNotNull(createdCharacter.getOccupation());
         assertNotNull(createdCharacter.getLore());
 
-        assertTrue(createdCharacter.getId() > 0);
+        createdCharacterId = createdCharacter.getId();
 
         assertEquals("TestNameXml", createdCharacter.getName());
         assertEquals("TestGenderXml", createdCharacter.getGender());
@@ -134,9 +124,10 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         List<TestWowCharacterDTO> characters = Arrays.asList(objectMapper
                 .readValue(content, TestWowCharacterDTO[].class));
 
-        assertEquals(10, characters.size());
-
-        TestWowCharacterDTO characterTest = characters.get(9);
+        TestWowCharacterDTO characterTest = characters.stream()
+                .filter(character -> createdCharacterId.equals(character.getId()))
+                .findFirst()
+                .orElseThrow();
 
         assertNotNull(characterTest);
         assertNotNull(characterTest.getId());
@@ -147,7 +138,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         assertNotNull(characterTest.getOccupation());
         assertNotNull(characterTest.getLore());
 
-        assertEquals(10L, characterTest.getId());
+        assertEquals(createdCharacterId, characterTest.getId());
         assertEquals("TestNameXml", characterTest.getName());
         assertEquals("TestGenderXml", characterTest.getGender());
         assertEquals("TestRaceXml", characterTest.getRace());
@@ -163,7 +154,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         var content = given().spec(specification)
                 .contentType(TestsConfig.CONTENT_TYPE_XML)
                 .accept(TestsConfig.CONTENT_TYPE_XML)
-                .pathParam("id", 10L)
+                .pathParam("id", createdCharacterId)
                 .when()
                     .get("/find/{id}")
                 .then()
@@ -183,7 +174,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         assertNotNull(characterFound.getOccupation());
         assertNotNull(characterFound.getLore());
 
-        assertEquals(10L, characterFound.getId());
+        assertEquals(createdCharacterId, characterFound.getId());
         assertEquals("TestNameXml", characterFound.getName());
         assertEquals("TestGenderXml", characterFound.getGender());
         assertEquals("TestRaceXml", characterFound.getRace());
@@ -213,7 +204,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
 
         String testAnswer = objectMapper.readValue(content, TestAskCharacterResponseDto.class).getAnswer();
 
-        assertNotNull(testAnswer);
+        assertEquals(GEMINI_ANSWER, testAnswer);
     }
 
     @Test
@@ -225,7 +216,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
                 .spec(specification)
                 .contentType(TestsConfig.CONTENT_TYPE_XML)
                 .accept(TestsConfig.CONTENT_TYPE_XML)
-                .pathParam("id", 10L)
+                .pathParam("id", createdCharacterId)
                 .body(objectMapper.writeValueAsString(characterDto))
                 .when()
                     .put("/update/{id}")
@@ -246,7 +237,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         assertNotNull(updatedCharacter.getOccupation());
         assertNotNull(updatedCharacter.getLore());
 
-        assertEquals(10L, updatedCharacter.getId());
+        assertEquals(createdCharacterId, updatedCharacter.getId());
         assertEquals("TestUpdatedNameXml", updatedCharacter.getName());
         assertEquals("TestUpdatedGenderXml", updatedCharacter.getGender());
         assertEquals("TestUpdatedRaceXml", updatedCharacter.getRace());
@@ -263,7 +254,7 @@ public class CharacterControllerXmlTest extends AbstractIntegrationTest {
         var content = given()
                 .spec(specification)
                 .contentType(TestsConfig.CONTENT_TYPE_XML)
-                .pathParam("id", 10L)
+                .pathParam("id", createdCharacterId)
                 .when()
                     .delete("/delete/{id}")
                 .then()

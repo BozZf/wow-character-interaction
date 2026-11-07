@@ -10,9 +10,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.EncoderConfig;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
@@ -25,8 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.LoggerFactoryFriend;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -39,10 +34,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("yaml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class AuthControllerYamlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
@@ -134,8 +125,6 @@ public class AuthControllerYamlTest extends AbstractIntegrationTest {
                                         "Bearer " + testDto.getRefreshToken() )
                                 .setBasePath("/api/v1/auth")
                                 .setPort(TestsConfig.SERVER_PORT)
-                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                                 .build();
     }
 
