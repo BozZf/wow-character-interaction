@@ -5,9 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
 import me.dio.wow_character_interaction.integrationtests.dto.TestAccountCredentialsDto;
@@ -16,8 +13,6 @@ import me.dio.wow_character_interaction.integrationtests.testcontainers.Abstract
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,15 +27,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("json")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class AuthControllerJsonTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static ObjectMapper objectMapper;
     private static Date now;
+    private static String accessToken;
 
     private Algorithm algorithm;
     private JWTVerifier verifier;
@@ -117,13 +109,12 @@ public class AuthControllerJsonTest extends AbstractIntegrationTest {
 
         assertDoesNotThrow(() -> verifier.verify(testDto.getRefreshToken()));
 
+        accessToken = testDto.getAccessToken();
         specification = new RequestSpecBuilder()
                                 .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION,
                                         "Bearer " + testDto.getRefreshToken() )
                                 .setBasePath("/api/v1/auth")
                                 .setPort(TestsConfig.SERVER_PORT)
-                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                                 .build();
     }
 
@@ -168,5 +159,34 @@ public class AuthControllerJsonTest extends AbstractIntegrationTest {
         algorithm = Algorithm.HMAC256(secretKey.getBytes());
         verifier = JWT.require(algorithm).build();
         assertDoesNotThrow(() -> verifier.verify(testDto.getAccessToken()));
+    }
+
+    @Test
+    @Order(2)
+    void accessAndRefreshTokensAreNotInterchangeable() {
+        given().port(TestsConfig.SERVER_PORT).header("Authorization", "Bearer " + accessToken)
+                .when().put("/api/v1/auth/refresh/TestAdmin")
+                .then().statusCode(401);
+
+        given().spec(specification)
+                .when().put("/refresh/another-user")
+                .then().statusCode(401);
+
+        given().spec(specification).basePath("/api/v1/character")
+                .when().get("/find-all")
+                .then().statusCode(401);
+    }
+
+    @Test
+    @Order(3)
+    void invalidCredentialsAndMalformedTokensReturnUnauthorized() {
+        given().port(TestsConfig.SERVER_PORT).contentType(TestsConfig.CONTENT_TYPE_JSON)
+                .body(new TestAccountCredentialsDto("TestAdmin", "wrong-password"))
+                .when().post("/api/v1/auth/signin")
+                .then().statusCode(401);
+
+        given().port(TestsConfig.SERVER_PORT).header("Authorization", "Bearer invalid")
+                .when().get("/api/v1/character/find-all")
+                .then().statusCode(401);
     }
 }

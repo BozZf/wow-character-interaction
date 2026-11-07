@@ -2,5 +2,5 @@ package me.dio.wow_character_interaction.service;
 
 public interface GeminiService {
 
-    String askCharacterQuestion(String question, String role);
+    String askCharacterQuestion(String objective, String context);
 }

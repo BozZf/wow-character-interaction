@@ -13,16 +13,23 @@ import me.dio.wow_character_interaction.data.dto.AskCharacterResponseDto;
 import me.dio.wow_character_interaction.data.dto.WowCharacterDto;
 import me.dio.wow_character_interaction.service.WowCharacterService;
 import me.dio.wow_character_interaction.util.MediaType;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/character")
 @Tag(name = "WOW Characters", description = "Endpoints for managing World Of Warcraft characters")
 public class WowCharacterController {
+
+    private static final Set<String> EDITOR_ROLES = Set.of("ADMIN", "MANAGER");
 
     private final WowCharacterService wowCharacterService;
 
@@ -59,8 +66,10 @@ public class WowCharacterController {
                 @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                 @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public List<WowCharacterDto> getAllCharacters() {
-        return wowCharacterService.findAllWowCharacters();
+    public List<WowCharacterDto> getAllCharacters(Authentication authentication) {
+        var characters = wowCharacterService.findAllWowCharacters();
+        characters.forEach(character -> addLinks(character, authentication));
+        return characters;
     }
 
     @GetMapping(value = "/find/{id}",
@@ -91,8 +100,8 @@ public class WowCharacterController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<WowCharacterDto> getCharacterById(@PathVariable Long id) {
-        return ResponseEntity.ok(wowCharacterService.findWowCharacterById(id));
+    public ResponseEntity<WowCharacterDto> getCharacterById(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(addLinks(wowCharacterService.findWowCharacterById(id), authentication));
     }
 
     @PostMapping(value = "/ask/{id}",
@@ -113,19 +122,18 @@ public class WowCharacterController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(type = "string")),
+                                            schema = @Schema(implementation = AskCharacterResponseDto.class)),
                                     @Content(
                                             mediaType = "application/xml",
-                                            schema = @Schema(type = "string")),
+                                            schema = @Schema(implementation = AskCharacterResponseDto.class)),
                                     @Content(
                                             mediaType = "application/x-yaml",
-                                            schema = @Schema(type = "string"))
+                                            schema = @Schema(implementation = AskCharacterResponseDto.class))
                             }),
-                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
-                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+                    @ApiResponse(description = "Gemini unavailable or returned no answer", responseCode = "502", content = @Content)
             })
     public AskCharacterResponseDto askCharacter(@PathVariable Long id, @RequestBody AskCharacterRequestDto request) {
         String answer = askCharacterUseCase.askCharacter(id, request.getQuestion());
@@ -159,10 +167,12 @@ public class WowCharacterController {
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<WowCharacterDto> postCharacter(@RequestBody WowCharacterDto wowCharacterToCreate) {
-        return ResponseEntity.ok(wowCharacterService.createWowCharacter(wowCharacterToCreate));
+    public ResponseEntity<WowCharacterDto> postCharacter(@RequestBody WowCharacterDto wowCharacterToCreate,
+                                                        Authentication authentication) {
+        return ResponseEntity.ok(addLinks(wowCharacterService.createWowCharacter(wowCharacterToCreate), authentication));
     }
 
     @PutMapping(value = "/update/{id}",
@@ -193,12 +203,14 @@ public class WowCharacterController {
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
     public ResponseEntity<WowCharacterDto> putCharacter(@PathVariable Long id,
-                                                        @RequestBody WowCharacterDto wowCharacterToPut) {
-        return ResponseEntity.ok(wowCharacterService.updateWowCharacter(id, wowCharacterToPut));
+                                                        @RequestBody WowCharacterDto wowCharacterToPut,
+                                                        Authentication authentication) {
+        return ResponseEntity.ok(addLinks(wowCharacterService.updateWowCharacter(id, wowCharacterToPut), authentication));
     }
 
     @DeleteMapping(value = "/delete/{id}")
@@ -211,6 +223,7 @@ public class WowCharacterController {
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
@@ -218,4 +231,18 @@ public class WowCharacterController {
         wowCharacterService.deleteWowCharacter(id);
     }
 
+    private WowCharacterDto addLinks(WowCharacterDto character, Authentication authentication) {
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
+                + "/api/v1/character";
+        character.add(Link.of(baseUrl + "/find-all", "Finds all characters"));
+        character.add(Link.of(baseUrl + "/find/:id", "Find a character"));
+        character.add(Link.of(baseUrl + "/ask/:id", "Chat with a character"));
+
+        if (authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch(EDITOR_ROLES::contains)) {
+            character.add(Link.of(baseUrl + "/create", "Add a character"));
+            character.add(Link.of(baseUrl + "/update/:id", "Update a character"));
+            character.add(Link.of(baseUrl + "/delete/:id", "Delete a character"));
+        }
+        return character;
+    }
 }

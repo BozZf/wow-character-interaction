@@ -4,13 +4,8 @@ import me.dio.wow_character_interaction.adapter.controller.exception.RequiredObj
 import me.dio.wow_character_interaction.adapter.repository.UserRepository;
 import me.dio.wow_character_interaction.data.dto.UserDto;
 import me.dio.wow_character_interaction.domain.model.User;
-import me.dio.wow_character_interaction.mapper.DTOMapper;
 import me.dio.wow_character_interaction.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,22 +13,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -45,99 +33,66 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (dtoToCreate == null) {
             throw new RequiredObjectIsNull();
         }
-        if (dtoToCreate.getUsername() == null ||
-                userRepository.existsByUsername(dtoToCreate.getUsername())) {
-            throw new IllegalArgumentException();
+        String username = dtoToCreate.getUsername();
+        requireText(username, "Username");
+        requireText(dtoToCreate.getPassword(), "Password");
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Username already exists");
         }
 
-        var entity = DTOMapper.parseObject(dtoToCreate, User.class);
-        entity.setPassword(passwordEncoding(dtoToCreate.getPassword()));
+        User entity = new User();
+        entity.setUserName(username);
+        entity.setFullName(dtoToCreate.getFullName());
+        entity.setPassword(passwordEncoder.encode(dtoToCreate.getPassword()));
         setBooleansToTrue(entity);
-
-        var dto = DTOMapper.parseObject(userRepository.save(entity), UserDto.class);
-        addLinks(dto);
-
-        return dto;
+        return toResponse(userRepository.save(entity));
     }
 
     @Transactional
     @Override
     public UserDto updateUserFullName(String username, String fullName) {
-        if (fullName == null) {
-            throw new RequiredObjectIsNull();
+        requireText(fullName, "Full name");
+        if (userRepository.updateFullName(username, fullName) == 0) {
+            throw new NoSuchElementException();
         }
-
-        if (!userRepository.existsByUsername(username)) {
-            throw new NoSuchElementException("User with username " + username + " not found!");
-        }
-
-        userRepository.updateFullName(username, fullName);
-        var dtoParsed = DTOMapper.parseObject(userRepository.findByUsername(username), UserDto.class);
-        addLinks(dtoParsed);
-
-        return dtoParsed;
+        return toResponse(userRepository.findByUsername(username));
     }
 
     @Transactional
     @Override
     public UserDto updateUserPassword(String username, String password) {
-        if (password == null) {
-            throw new RequiredObjectIsNull();
+        requireText(password, "Password");
+        if (userRepository.updatePassword(username, passwordEncoder.encode(password)) == 0) {
+            throw new NoSuchElementException();
         }
-
-        if (!userRepository.existsByUsername(username)) {
-            throw new NoSuchElementException("User with username " + username + " not found!");
-        }
-
-        String encodedPassword = passwordEncoding(password);
-        userRepository.updatePassword(username, encodedPassword);
-
-        var dtoParsed = DTOMapper.parseObject(userRepository.findByUsername(username), UserDto.class);
-        addLinks(dtoParsed);
-
-        return dtoParsed;
+        return toResponse(userRepository.findByUsername(username));
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByUsername(username);
-        if (user != null) {
-            return user;
-        } else {
-            throw new UsernameNotFoundException("Username " + username + " not found!");
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return user;
+    }
+
+    private void requireText(String value, String field) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(field + " is required");
         }
     }
 
-    private String passwordEncoding(String password) {
-        return passwordEncoder.encode(password);
-    }
+    private UserDto toResponse(User user) {
+        UserDto dto = new UserDto();
+        dto.setUsername(user.getUsername());
+        dto.setFullName(user.getFullName());
 
-    private void addLinks(UserDto dto) {
-
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .build()
-                .toUriString() + "/api/v1/users";
-
-        URI createUserUri = UriComponentsBuilder
-                .fromUriString(baseUrl + "/create")
-                .build()
-                .toUri();
-        Link createUserLink = Link.of(createUserUri.toString(), "Create a new User");
-        dto.add(createUserLink);
-
-        URI updateFullNameUri = UriComponentsBuilder
-                .fromUriString(baseUrl + "/update/:username/full-name")
-                .buildAndExpand()
-                .toUri();
-        Link updateFullNameLink = Link.of(updateFullNameUri.toString(), "Update a User full name");
-        dto.add(updateFullNameLink);
-
-        URI updatePasswordUri = UriComponentsBuilder
-                .fromUriString(baseUrl + "/update/:username/password")
-                .buildAndExpand()
-                .toUri();
-        Link updatePasswordLink = Link.of(updatePasswordUri.toString(), "Update a User password");
-        dto.add(updatePasswordLink);
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/api/v1/users";
+        dto.add(Link.of(baseUrl + "/create", "Create a new User"));
+        dto.add(Link.of(baseUrl + "/update/:username/full-name", "Update a User full name"));
+        dto.add(Link.of(baseUrl + "/update/:username/password", "Update a User password"));
+        return dto;
     }
 
     private void setBooleansToTrue(User entity) {

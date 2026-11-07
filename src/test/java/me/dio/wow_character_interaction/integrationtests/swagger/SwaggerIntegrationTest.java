@@ -4,17 +4,12 @@ import me.dio.wow_character_interaction.configs.TestsConfig;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class SwaggerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
@@ -31,5 +26,14 @@ public class SwaggerIntegrationTest extends AbstractIntegrationTest {
                                 .asString();
 
         assertTrue(content.contains("Swagger UI"));
+    }
+
+    @Test
+    void documentsAccessAndRefreshBearerSchemes() {
+        given().port(TestsConfig.SERVER_PORT)
+                .when().get("/v3/api-docs")
+                .then().statusCode(200)
+                .body("components.securitySchemes.bearerAuth.scheme", equalTo("bearer"))
+                .body("components.securitySchemes.refreshBearerAuth.scheme", equalTo("bearer"));
     }
 }

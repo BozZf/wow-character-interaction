@@ -1,11 +1,11 @@
 package me.dio.wow_character_interaction.service;
 
 import me.dio.wow_character_interaction.data.dto.security.AccountCredentialsDto;
-import org.springframework.http.ResponseEntity;
+import me.dio.wow_character_interaction.data.dto.security.TokenDto;
 
 public interface AuthService {
 
-    ResponseEntity signin(AccountCredentialsDto accountCredentialsDto);
+    TokenDto signin(AccountCredentialsDto credentials);
 
-    ResponseEntity refreshToken(String username, String refreshToken);
+    TokenDto refreshToken(String username, String refreshToken);
 }

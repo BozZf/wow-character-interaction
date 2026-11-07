@@ -7,9 +7,6 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
 import me.dio.wow_character_interaction.integrationtests.dto.TestAccountCredentialsDto;
@@ -18,8 +15,6 @@ import me.dio.wow_character_interaction.integrationtests.testcontainers.Abstract
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -33,10 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("xml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class AuthControllerXmlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
@@ -123,8 +114,6 @@ public class AuthControllerXmlTest extends AbstractIntegrationTest {
                                         "Bearer " + testDto.getRefreshToken() )
                                 .setBasePath("/api/v1/auth")
                                 .setPort(TestsConfig.SERVER_PORT)
-                                    .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                                    .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                                 .build();
     }
 

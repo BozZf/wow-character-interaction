@@ -8,9 +8,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.EncoderConfig;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import me.dio.wow_character_interaction.configs.TestsConfig;
@@ -19,13 +16,13 @@ import me.dio.wow_character_interaction.integrationtests.dto.TestTokenDto;
 import me.dio.wow_character_interaction.integrationtests.dto.TestUserDto;
 import me.dio.wow_character_interaction.integrationtests.testcontainers.AbstractIntegrationTest;
 import org.junit.jupiter.api.*;
+import me.dio.wow_character_interaction.adapter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,19 +30,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("yaml")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(
-        initializers = AbstractIntegrationTest.Initializer.class
-)
-@TestPropertySource("classpath:application-test.properties")
 public class UserControllerYamlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static YAMLMapper objectMapper;
 
+    private static final String USERNAME = "test-" + UUID.randomUUID();
+
     private static TestUserDto userDto;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeAll
     public static void setup() {
@@ -82,17 +80,17 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(createdUser);
         assertNotNull(createdUser.getUsername());
         assertNotNull(createdUser.getFullName());
-        assertNotNull(createdUser.getPassword());
+        assertNull(createdUser.getPassword());
 
-        assertEquals("TestName", createdUser.getUsername());
+        assertEquals(USERNAME, createdUser.getUsername());
         assertEquals("Test Full Name", createdUser.getFullName());
-        assertTrue(passwordEncoder.matches("TestPassword123", createdUser.getPassword()));
+        assertTrue(passwordEncoder.matches("TestPassword123", userRepository.findByUsername(USERNAME).getPassword()));
     }
 
     @Test
     @Order(1)
     public void authorization() throws JsonMappingException, JsonProcessingException {
-        TestAccountCredentialsDto credentialsDto = new TestAccountCredentialsDto("TestName",
+        TestAccountCredentialsDto credentialsDto = new TestAccountCredentialsDto(USERNAME,
                                                 "TestPassword123");
 
         var content = given()
@@ -119,8 +117,6 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
                             .addHeader(TestsConfig.HEADER_PARAM_AUTHORIZATION, "Bearer " + token )
                             .setBasePath("/api/v1/users")
                             .setPort(TestsConfig.SERVER_PORT)
-                                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                             .build();
     }
 
@@ -134,7 +130,7 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
                                 .config()
                                 .encoderConfig(EncoderConfig.encoderConfig()
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
-                        .pathParam("username", "TestName")
+                        .pathParam("username", USERNAME)
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
                             .body("Test Updated Full Name")
@@ -151,9 +147,9 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(updatedUser);
         assertNotNull(updatedUser.getUsername());
         assertNotNull(updatedUser.getFullName());
-        assertNotNull(updatedUser.getPassword());
+        assertNull(updatedUser.getPassword());
 
-        assertEquals("TestName", updatedUser.getUsername());
+        assertEquals(USERNAME, updatedUser.getUsername());
         assertEquals("Test Updated Full Name", updatedUser.getFullName());
     }
 
@@ -167,7 +163,7 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
                                 .config()
                                 .encoderConfig(EncoderConfig.encoderConfig()
                                         .encodeContentTypeAs(TestsConfig.CONTENT_TYPE_YML, ContentType.TEXT)))
-                        .pathParam("username", "TestName")
+                        .pathParam("username", USERNAME)
                         .contentType(TestsConfig.CONTENT_TYPE_YML)
                         .accept(TestsConfig.CONTENT_TYPE_YML)
                             .body("TestUpdatedPassword123")
@@ -184,14 +180,14 @@ public class UserControllerYamlTest extends AbstractIntegrationTest {
         assertNotNull(updatedUser);
         assertNotNull(updatedUser.getUsername());
         assertNotNull(updatedUser.getFullName());
-        assertNotNull(updatedUser.getPassword());
+        assertNull(updatedUser.getPassword());
 
-        assertEquals("TestName", updatedUser.getUsername());
-        assertTrue(passwordEncoder.matches("TestUpdatedPassword123", updatedUser.getPassword()));
+        assertEquals(USERNAME, updatedUser.getUsername());
+        assertTrue(passwordEncoder.matches("TestUpdatedPassword123", userRepository.findByUsername(USERNAME).getPassword()));
     }
 
     public void mockUser() {
-        userDto.setUsername("TestName");
+        userDto.setUsername(USERNAME);
         userDto.setFullName("Test Full Name");
         userDto.setPassword("TestPassword123");
     }

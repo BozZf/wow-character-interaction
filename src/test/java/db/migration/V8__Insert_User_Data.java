@@ -12,10 +12,10 @@ public class V8__Insert_User_Data extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
 
-        String secretKey = System.getenv("PASS_CRYPT_SECRET");
+        String secretKey = context.getConfiguration().getPlaceholders().get("testPasswordPepper");
 
         if (secretKey == null) {
-            throw new IllegalStateException("PASS_CRYPT_SECRET environment variable is not set.");
+            throw new IllegalStateException("Test password pepper is not configured.");
         }
 
         PasswordEncoder passwordEncoder = new Pbkdf2PasswordEncoder(

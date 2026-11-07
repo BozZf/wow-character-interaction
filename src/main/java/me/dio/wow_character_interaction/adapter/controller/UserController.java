@@ -7,28 +7,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.dio.wow_character_interaction.configs.UsernameEnc;
 import me.dio.wow_character_interaction.data.dto.UserDto;
-import me.dio.wow_character_interaction.service.impl.UserServiceImpl;
+import me.dio.wow_character_interaction.service.UserService;
 import me.dio.wow_character_interaction.util.MediaType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(name = "User Endpoints", description = "Endpoints manage users")
 public class UserController {
 
-    @Autowired
-    private UsernameEnc usernameEnc;
+    private final UserService userService;
 
-    @Autowired
-    private UserServiceImpl userService;
-
-    public UserController(UsernameEnc usernameEnc, UserServiceImpl userService) {
-        this.usernameEnc = usernameEnc;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -92,13 +87,14 @@ public class UserController {
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<UserDto> patchUserFullName(@PathVariable("username") String encryptedUsername,
-                                              @RequestBody String fullName) {
-        String decryptedUsername = usernameEnc.decrypt(encryptedUsername);
-        return ResponseEntity.ok(userService.updateUserFullName(decryptedUsername, fullName));
+    public ResponseEntity<UserDto> patchUserFullName(@PathVariable String username, @RequestBody String fullName,
+                                                     Principal principal) {
+        requireOwner(username, principal);
+        return ResponseEntity.ok(userService.updateUserFullName(username, fullName));
     }
 
     @PatchMapping(value = "/update/{username}/password",
@@ -129,12 +125,19 @@ public class UserController {
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<UserDto> patchUserPassword(@PathVariable("username") String encryptedUsername,
-                                                     @RequestBody String password) {
-        String decryptedUsername = usernameEnc.decrypt(encryptedUsername);
-        return ResponseEntity.ok(userService.updateUserPassword(decryptedUsername, password));
+    public ResponseEntity<UserDto> patchUserPassword(@PathVariable String username, @RequestBody String password,
+                                                     Principal principal) {
+        requireOwner(username, principal);
+        return ResponseEntity.ok(userService.updateUserPassword(username, password));
+    }
+
+    private void requireOwner(String username, Principal principal) {
+        if (!username.equals(principal.getName())) {
+            throw new AccessDeniedException("Only the account owner can change this user");
+        }
     }
 }
